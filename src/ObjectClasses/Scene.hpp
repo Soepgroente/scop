@@ -8,7 +8,6 @@
 #include "Vec3.hpp"
 #include "Vec4.hpp"
 #include "Object.hpp"
-#include "ObjectParser.hpp"
 
 class Scene
 {
@@ -16,11 +15,12 @@ class Scene
 
 	Scene() = default;
 	~Scene() = default;
-	Scene(const std::string& filePath);
 	Scene(const Scene& other) = delete;
 	Scene& operator=(const Scene& other) = delete;
 
 	void	addObject(const Object& obj) { objects.emplace_back(std::move(obj)); }
+	size_t	size() const { return objects.size(); }
+	const Object&	getObject(size_t index) const { return objects.at(index); }
 
 	private:
 	

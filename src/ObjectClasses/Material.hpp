@@ -8,4 +8,4 @@ class Material
 	~Material() = default;
 
 	private:
-}
+};

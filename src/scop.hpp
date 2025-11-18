@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Scene.hpp"
-// #include "glfw3.h"
+#include </opt/homebrew/include/GLFW/glfw3.h>
+#include <GLFW/glfw3.h>
 
-class Scene;
-class ObjectParser;
-class Object;
+#include "ObjectParser.hpp"
+#include "Scene.hpp"
+#include "WindowManager.hpp"

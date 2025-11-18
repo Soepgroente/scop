@@ -25,9 +25,8 @@ Vec3::Vec3(const Vec3& other)
 
 Vec3&	Vec3::operator=(const Vec3& other)
 {
-	Vec3	newVec3(other);
-
-	return newVec3;
+	this->vec.data = other.vec.data;
+	return *this;
 }
 
 Vec3	Vec3::operator*(float scalar)	const

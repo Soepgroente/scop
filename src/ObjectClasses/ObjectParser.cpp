@@ -78,22 +78,14 @@ static void	addSurfaceNormal(Object& obj, std::istringstream& normalData)
 
 static void	addFace(Object& obj, std::istringstream& faceData)
 {
-	Faces	face;
-
-	for (int i = 0; i < 3; i++)
-	{
-		faceData >> face.faces[i];
-		if (faceData.fail() == true)
-		{
-			throw std::runtime_error("Invalid face format");
-		}
-	}
-	obj.mesh.faces.emplace_back(face);
+	(void)obj;
+	(void)faceData;
 }
 
 static void	material(Object& obj, std::istringstream& materialData)
 {
-	;
+	(void)obj;
+	(void)materialData;
 }
 
 /*	Elements that can occur in .obj file:
@@ -117,7 +109,8 @@ void	ObjectParser::addObjectsFromFile(const std::string& objFilePath, Scene& sce
 
 	if (file.is_open() == false)
 	{
-		throw std::runtime_error("Failed to open OBJ file: " + objFilePath);
+		std::cerr << "Error: Could not open OBJ file: " << objFilePath << std::endl;
+		std::exit(EXIT_FAILURE);
 	}
 	std::string	materialFile = objFilePath.substr(0, objFilePath.find_last_of('.')) + ".mtl";
 	std::string	line;
@@ -140,7 +133,7 @@ void	ObjectParser::addObjectsFromFile(const std::string& objFilePath, Scene& sce
 		std::getline(file, line);
 		lineCount++;
 		
-		if (line[0] == '\n' || line[0] == '#')
+		if (line.size() == 0 || line[0] == '\n' || line[0] == '#')
 		{
 			continue;
 		}

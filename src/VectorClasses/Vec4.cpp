@@ -28,9 +28,8 @@ Vec4::Vec4(const Vec4& other)
 
 Vec4&	Vec4::operator=(const Vec4& other)
 {
-	Vec4	newVec4(other.vec);
-
-	return newVec4;
+	this->vec = other.vec;
+	return *this;
 }
 
 std::ostream&	operator<<(std::ostream& os, const Vec4& vector)
