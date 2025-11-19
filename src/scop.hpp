@@ -1,8 +1,28 @@
 #pragma once
 
-#include </opt/homebrew/include/GLFW/glfw3.h>
-#include <GLFW/glfw3.h>
+#include "VulkanWindow.hpp"
+#include "VulkanPipeline.hpp"
 
-#include "ObjectParser.hpp"
-#include "Scene.hpp"
-#include "WindowManager.hpp"
+namespace ve {
+
+class Scop
+{
+	public:
+
+	Scop() = default;
+	Scop(const Scop&) = delete;
+	Scop& operator=(const Scop&) = delete;
+	~Scop() = default;
+
+	void	run();
+
+	static constexpr int	DEFAULT_WIDTH = 1440;
+	static constexpr int	DEFAULT_HEIGHT = 1440;
+
+	private:
+	
+	VulkanWindow	vulkanWindow{DEFAULT_HEIGHT, DEFAULT_WIDTH, "Scop"};
+	VulkanPipeline	vulkanPipeline{"src/shaders/shadyBusiness.vert.spv", "src/shaders/shadyBusiness.frag.spv"};
+};
+
+}

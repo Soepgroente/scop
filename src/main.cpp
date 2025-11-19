@@ -1,4 +1,8 @@
-#include "scop.hpp"
+#include "Scop.hpp"
+
+#include <cstdlib>
+#include <iostream>
+#include <stdexcept>
 
 int main(int argc, char** argv)
 {
@@ -7,12 +11,17 @@ int main(int argc, char** argv)
 		std::cerr << "Usage: " << argv[0] << " <path_to_obj_file>" << std::endl;
 		return 1;
 	}
-	Scene scene;
-	ObjectParser::addObjectsFromFile(argv[1], scene);
-	WindowManager windowManager;
+	ve::Scop	scop{};
 
-	windowManager.setScene(scene);
-	std::cout << "Loaded scene with " << scene.size() << " object(s)." << std::endl;
-	windowManager.run();
-	return 0;
+	try
+	{
+		scop.run();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Error: " << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
 }
