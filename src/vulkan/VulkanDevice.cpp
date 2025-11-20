@@ -16,6 +16,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 {
 	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
+	(void)messageSeverity;
+	(void)messageType;
+	(void)pUserData;
 	return VK_FALSE;
 }
 
@@ -90,10 +93,13 @@ void VulkanDevice::createInstance()
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	VkInstanceCreateInfo createInfo = {};
+
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
+	createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 
-	auto extensions = getRequiredExtensions();
+	std::vector<const char*> extensions = getRequiredExtensions();
+	extensions.push_back("VK_KHR_portability_enumeration");
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -336,7 +342,8 @@ bool	VulkanDevice::checkDeviceExtensionSupport(VkPhysicalDevice device)
 		device,
 		nullptr,
 		&extensionCount,
-		availableExtensions.data());
+		availableExtensions.data()
+	);
 
 	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 

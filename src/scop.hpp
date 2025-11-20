@@ -1,7 +1,14 @@
 #pragma once
 
-#include "VulkanWindow.hpp"
+#include "VulkanDevice.hpp"
 #include "VulkanPipeline.hpp"
+#include "VulkanSwapChain.hpp"
+#include "VulkanWindow.hpp"
+
+#include <GLFW/glfw3.h>
+#include <array>
+#include <memory>
+#include <vector>
 
 namespace ve {
 
@@ -9,10 +16,11 @@ class Scop
 {
 	public:
 
-	Scop() = default;
+	Scop();
+	~Scop();
+	
 	Scop(const Scop&) = delete;
 	Scop& operator=(const Scop&) = delete;
-	~Scop() = default;
 
 	void	run();
 
@@ -22,7 +30,17 @@ class Scop
 	private:
 	
 	VulkanWindow	vulkanWindow{DEFAULT_HEIGHT, DEFAULT_WIDTH, "Scop"};
-	VulkanPipeline	vulkanPipeline{"src/shaders/shadyBusiness.vert.spv", "src/shaders/shadyBusiness.frag.spv"};
+	VulkanDevice	vulkanDevice{vulkanWindow};
+	VulkanSwapChain	vulkanSwapChain{vulkanDevice, vulkanWindow.getFramebufferExtent()};
+	
+	std::unique_ptr<VulkanPipeline>	vulkanPipelinePtr;
+	VkPipelineLayout				pipelineLayout;
+	std::vector<VkCommandBuffer>	commandBuffers;
+
+	void	createPipelineLayout();
+	void	createPipeline();
+	void	createCommandBuffers();
+	void	drawFrame();
 };
 
 }

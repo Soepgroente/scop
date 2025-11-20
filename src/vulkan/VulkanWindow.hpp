@@ -23,6 +23,7 @@ class VulkanWindow
 
 	void	createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
+	VkExtent2D	getFramebufferExtent() const { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
 	private:
 
 	void	initWindow();
@@ -33,4 +34,5 @@ class VulkanWindow
 	std::string	title;
 	GLFWwindow*	window;
 };
+
 }

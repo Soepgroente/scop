@@ -1,3 +1,6 @@
 *.o
 .vscode
 scop
+*.spv
+
+notes.md

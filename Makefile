@@ -17,6 +17,9 @@ SRCS	:=	main.cpp \
 			Scop.cpp \
 			VectorClasses/Vec3.cpp \
 			VectorClasses/Vec4.cpp \
+			vulkan/VulkanDevice.cpp \
+			vulkan/VulkanPipeline.cpp \
+			vulkan/VulkanSwapChain.cpp \
 			vulkan/VulkanWindow.cpp \
 
 SHADERS_SRC	:=	src/shaders/shadyBusiness.vert \
@@ -33,6 +36,7 @@ SHADERS_COMPILED := $(SHADERS_SRC:%=%.spv)
 
 LIBS	:=	-L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit
 
+RPATH_DIR	:=	/usr/local/lib
 LDFLAGS		:=	-lvulkan -I/opt/homebrew/include -lm
 LDFLAGS		+=	-Wl -rpath $(RPATH_DIR)
 
@@ -44,9 +48,6 @@ ifeq ($(UNAME_S), Linux)
 endif
 
 all: $(SHADERS_COMPILED) $(NAME)
-
-$(SHADERS_COMPILED): ;
-	@echo "Compiling shader: $@"
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
