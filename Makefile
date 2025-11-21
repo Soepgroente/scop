@@ -1,6 +1,9 @@
-NAME	:=	scop
-CC		:=	c++
-CFLAGS	:=	-Wall -Wextra -Werror -std=c++20
+NAME			:=	scop
+CC				:=	c++
+BASE_CPPFLAGS	:=	-Wall -Wextra -Werror -std=c++20
+RELEASE_FLAGS	:=	-DNDEBUG -flto -O3 -march=native
+DEBUG_FLAGS		:=	-g -fsanitize=address
+
 INCLUDES:=	-I./src -I./libs/glm \
 			-I/opt/homebrew/include \
 			-I./src/ObjectClasses \
@@ -18,54 +21,61 @@ SRCS	:=	main.cpp \
 			VectorClasses/Vec3.cpp \
 			VectorClasses/Vec4.cpp \
 			vulkan/VulkanDevice.cpp \
+			vulkan/VulkanModel.cpp \
 			vulkan/VulkanPipeline.cpp \
 			vulkan/VulkanSwapChain.cpp \
 			vulkan/VulkanWindow.cpp \
 
-SHADERS_SRC	:=	src/shaders/shadyBusiness.vert \
-				src/shaders/shadyBusiness.frag \
-
-SHADER_COMPILE_CMD := $(shell which glslc)
 
 SRCDIR	:=	src
 OBJDIR	:=	$(SRCDIR)/obj
-
 OBJS	:=	$(addprefix $(OBJDIR)/,$(notdir $(SRCS:%.cpp=%.o)))
 
-SHADERS_COMPILED := $(SHADERS_SRC:%=%.spv)
+SHADERS_SRC	:=	src/shaders/shadyBusiness.vert \
+				src/shaders/shadyBusiness.frag \
 
-LIBS	:=	-L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit
+SHADER_COMPILE_CMD	:= $(shell which glslc)
+SHADERS_COMPILED	:= $(SHADERS_SRC:%=%.spv)
 
+LIBS		:=	-L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit
 RPATH_DIR	:=	/usr/local/lib
-LDFLAGS		:=	-lvulkan -I/opt/homebrew/include -lm
-LDFLAGS		+=	-Wl -rpath $(RPATH_DIR)
+LDFLAGS		:=	-lvulkan -I/opt/homebrew/include -lm -Wl -rpath $(RPATH_DIR)
 
 ifeq ($(UNAME_S), Linux)
 	ECHO_MESSAGE = "Linux"
 	LIBS = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl `pkg-config --static --libs glfw3`
-
-	CPPFLAGS += `pkg-config --CPPFLAGS glfw3`
+	BASE_CPPFLAGS += `pkg-config --cflags glfw3`
 endif
 
+CPPFLAGS = $(BASE_CPPFLAGS) $(RELEASE_FLAGS)
+
 all: $(SHADERS_COMPILED) $(NAME)
+
+debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
+debug: clean $(SHADERS_COMPILED) $(NAME)
+
+run: all
+	./$(NAME) ./examples/teapot.obj
+
+rundebug: debug
+	./$(NAME) ./examples/teapot.obj
+
+rerun: fclean run
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 $(NAME): $(OBJDIR) $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
+	$(CC) $(CPPFLAGS) $(INCLUDES) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
 
-%.frag.spv : %.frag
-	$(SHADER_COMPILE_CMD) $< -o $@
-
-%.vert.spv : %.vert
+%.spv : %
 	$(SHADER_COMPILE_CMD) $< -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/*/%.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
 	rm -rf $(OBJDIR)
@@ -76,4 +86,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all debug clean fclean re run rundebug rerun

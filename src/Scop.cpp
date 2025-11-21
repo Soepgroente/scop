@@ -1,12 +1,54 @@
 #include "Scop.hpp"
 
-namespace ve {
+#include <chrono>
+#include <random>
 
+namespace ve {
+	
 Scop::Scop()
 {
+	loadModels();
 	createPipelineLayout();
-	createPipeline();
+	recreateSwapChain();
 	createCommandBuffers();
+}
+
+static std::vector<VulkanModel::Vertex>	generateSierpinskiTriangle(int depth)
+{
+	std::vector<VulkanModel::Vertex>	vertices;
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> dis(0.0, 1.0);
+
+	glm::vec2	begin[3] =
+	{
+		{-0.9f, 0.9f},
+		{0.9f, 0.9f},
+		{0.0f, -0.9f}
+	};
+
+	std::function<void(glm::vec2, glm::vec2, glm::vec2, int)>	subdivide =
+		[&](glm::vec2 v1, glm::vec2 v2, glm::vec2 v3, int _depth)
+	{
+		if (_depth == 0)
+		{
+			vertices.push_back({v1, {dis(gen), dis(gen), dis(gen)}});
+			vertices.push_back({v2, {dis(gen), dis(gen), dis(gen)}});
+			vertices.push_back({v3, {dis(gen), dis(gen), dis(gen)}});
+			return;
+		}
+		glm::vec2	mid12 = (v1 + v2) / 2.0f;
+		glm::vec2	mid23 = (v2 + v3) / 2.0f;
+		glm::vec2	mid31 = (v3 + v1) / 2.0f;
+
+		subdivide(v1, mid12, mid31, _depth - 1);
+		subdivide(v2, mid23, mid12, _depth - 1);
+		subdivide(v3, mid31, mid23, _depth - 1);
+	};
+	subdivide(begin[0], begin[1], begin[2], depth);
+	
+	return vertices;
 }
 
 Scop::~Scop()
@@ -16,11 +58,24 @@ Scop::~Scop()
 
 void	Scop::run()
 {
+	// std::chrono::steady_clock::time_point	begin, end;
 	while (vulkanWindow.shouldClose() == false)
 	{
 		glfwPollEvents();
+		// begin = std::chrono::steady_clock::now();
 		drawFrame();
+		// end = std::chrono::steady_clock::now();
+		// std::chrono::duration<double, std::milli>	elapsed = end - begin;
+		// std::cout << "Frame time: " << elapsed.count() << " ms \n";
 	}
+	vkDeviceWaitIdle(vulkanDevice.device());
+}
+
+void	Scop::loadModels()
+{
+	std::vector<VulkanModel::Vertex>	vertices = generateSierpinskiTriangle(6);
+
+	vulkanModelPtr = std::make_unique<VulkanModel>(vulkanDevice, vertices);
 }
 
 void	Scop::createPipelineLayout()
@@ -41,13 +96,14 @@ void	Scop::createPipelineLayout()
 
 void	Scop::createPipeline()
 {
-	PipelineConfigInfo	pipelineConfig = VulkanPipeline::defaultPipelineConfigInfo(
-		vulkanSwapChain.getSwapChainExtent().width,
-		vulkanSwapChain.getSwapChainExtent().height
-	);
+	assert(vulkanSwapChainPtr != nullptr && "Cannot create pipeline before swap chain");
+	assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
+	PipelineConfigInfo	pipelineConfig{};
+	
+	VulkanPipeline::defaultPipelineConfigInfo(pipelineConfig);
 	pipelineConfig.pipelineLayout = pipelineLayout;
-	pipelineConfig.renderPass = vulkanSwapChain.getRenderPass();
+	pipelineConfig.renderPass = vulkanSwapChainPtr->getRenderPass();
 
 	vulkanPipelinePtr = std::make_unique<VulkanPipeline>(
 		vulkanDevice,
@@ -57,11 +113,41 @@ void	Scop::createPipeline()
 	);
 }
 
+void	Scop::recreateSwapChain()
+{
+	VkExtent2D extent = vulkanWindow.getFramebufferExtent();
+
+	while (extent.width == 0 || extent.height == 0)
+	{
+		extent = vulkanWindow.getFramebufferExtent();
+		glfwWaitEvents();
+	}
+
+	vkDeviceWaitIdle(vulkanDevice.device());
+	if (vulkanSwapChainPtr == nullptr)
+	{
+		vulkanSwapChainPtr = std::make_unique<VulkanSwapChain>(vulkanDevice, extent);
+	}
+	else
+	{
+		vulkanSwapChainPtr = std::make_unique<VulkanSwapChain>(vulkanDevice, extent, std::move(vulkanSwapChainPtr));
+		if (vulkanSwapChainPtr->imageCount() != commandBuffers.size())
+		{
+			freeCommandBuffers();
+			createCommandBuffers();
+		}
+	}
+
+	// if renderpass compatible, don't need to recreate pipeline
+	createPipeline();
+}
+
 void	Scop::createCommandBuffers()
 {
+	commandBuffers.resize(vulkanSwapChainPtr->imageCount());
 	VkCommandBufferAllocateInfo	allocInfo{};
 
-	commandBuffers.resize(vulkanSwapChain.imageCount());
+	commandBuffers.resize(vulkanSwapChainPtr->imageCount());
 
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -72,56 +158,93 @@ void	Scop::createCommandBuffers()
 	{
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
+}
 
-	for (size_t i = 0; i < commandBuffers.size(); i++)
+void	Scop::freeCommandBuffers()
+{
+	vkFreeCommandBuffers(
+		vulkanDevice.device(),
+		vulkanDevice.getCommandPool(),
+		static_cast<uint32_t>(commandBuffers.size()),
+		commandBuffers.data()
+	);
+	commandBuffers.clear();
+}
+
+void	Scop::recordCommandBuffer(uint32_t imageIndex)
+{
+	VkCommandBufferBeginInfo	beginInfo{};
+
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+	if (vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS)
 	{
-		VkCommandBufferBeginInfo	beginInfo{};
+		throw std::runtime_error("failed to begin recording command buffer!");
+	}
+	VkRenderPassBeginInfo	renderPassInfo{};
 
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = vulkanSwapChainPtr->getRenderPass();
+	renderPassInfo.framebuffer = vulkanSwapChainPtr->getFrameBuffer(imageIndex);
+	
+	renderPassInfo.renderArea.offset = {0, 0};
+	renderPassInfo.renderArea.extent = vulkanSwapChainPtr->getSwapChainExtent();
 
-		if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to begin recording command buffer!");
-		}
+	std::array<VkClearValue, 2>	clearValues{};
 
-		VkRenderPassBeginInfo	renderPassInfo{};
+	clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+	clearValues[1].depthStencil = {1.0f, 0};
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
 
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = vulkanSwapChain.getRenderPass();
-		renderPassInfo.framebuffer = vulkanSwapChain.getFrameBuffer(i);
-		
-		renderPassInfo.renderArea.offset = {0, 0};
-		renderPassInfo.renderArea.extent = vulkanSwapChain.getSwapChainExtent();
+	vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		std::array<VkClearValue, 2>	clearValues{};
+	VkViewport	viewport{};
+	VkRect2D	scissor{{0, 0}, vulkanSwapChainPtr->getSwapChainExtent()};
 
-		clearValues[0].color = {{0.01f, 0.01f, 0.01f, 1.0f}};
-		clearValues[1].depthStencil = {1.0f, 0};
-		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-		renderPassInfo.pClearValues = clearValues.data();
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = static_cast<float>(vulkanSwapChainPtr->getSwapChainExtent().width);
+	viewport.height = static_cast<float>(vulkanSwapChainPtr->getSwapChainExtent().height);
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+	vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
 
-		vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vulkanPipelinePtr->bind(commandBuffers[imageIndex]);
+	vulkanModelPtr->bind(commandBuffers[imageIndex]);
+	vulkanModelPtr->draw(commandBuffers[imageIndex]);
 
-		vulkanPipelinePtr->bind(commandBuffers[i]);
-		vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
-		vkCmdEndRenderPass(commandBuffers[i]);
-		if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to record command buffer!");
-		}
+	vkCmdDraw(commandBuffers[imageIndex], 3, 1, 0, 0);
+	vkCmdEndRenderPass(commandBuffers[imageIndex]);
+	if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to record command buffer!");
 	}
 }
 
 void	Scop::drawFrame()
 {
 	uint32_t	imageIndex;
-	VkResult result = vulkanSwapChain.acquireNextImage(&imageIndex);
+	VkResult result = vulkanSwapChainPtr->acquireNextImage(&imageIndex);
 
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		recreateSwapChain();
+		return;
+	}
 	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
-	result = vulkanSwapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+	recordCommandBuffer(imageIndex);
+	result = vulkanSwapChainPtr->submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || vulkanWindow.wasWindowResized())
+	{
+		vulkanWindow.resetWindowResizedFlag();
+		recreateSwapChain();
+		return;
+	}
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to present swap chain image!");

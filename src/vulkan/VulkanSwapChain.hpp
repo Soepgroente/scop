@@ -7,6 +7,7 @@
 
 // std lib headers
 #include <string>
+#include <memory>
 #include <vector>
 
 namespace ve {
@@ -18,11 +19,12 @@ class VulkanSwapChain
 	static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 	VulkanSwapChain(VulkanDevice& deviceRef, VkExtent2D windowExtent);
+	VulkanSwapChain(VulkanDevice& deviceRef, VkExtent2D windowExtent, std::shared_ptr<VulkanSwapChain> previous);
 	~VulkanSwapChain();
 
 	VulkanSwapChain() = delete;
 	VulkanSwapChain(const VulkanSwapChain&) = delete;
-	void operator=(const VulkanSwapChain&) = delete;
+	VulkanSwapChain& operator=(const VulkanSwapChain&) = delete;
 
 	VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 	VkRenderPass getRenderPass() { return renderPass; }
@@ -40,12 +42,13 @@ class VulkanSwapChain
 
 	private:
 
-	void createSwapChain();
-	void createImageViews();
-	void createDepthResources();
-	void createRenderPass();
-	void createFramebuffers();
-	void createSyncObjects();
+	void	init();
+	void	createSwapChain();
+	void	createImageViews();
+	void	createDepthResources();
+	void	createRenderPass();
+	void	createFramebuffers();
+	void	createSyncObjects();
 
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -67,6 +70,8 @@ class VulkanSwapChain
 	VkExtent2D windowExtent;
 
 	VkSwapchainKHR swapChain;
+
+	std::shared_ptr<VulkanSwapChain>	oldSwapChain;
 
 	std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;

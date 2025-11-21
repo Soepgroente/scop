@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace ve {
 
 class VulkanWindow
@@ -19,17 +18,21 @@ class VulkanWindow
 	VulkanWindow& operator=(const VulkanWindow&) = delete;
 	~VulkanWindow();
 
-	bool	shouldClose() const { return glfwWindowShouldClose(window); }
-
+	bool	shouldClose() const noexcept { return glfwWindowShouldClose(window); }
+	bool	wasWindowResized() const noexcept { return resized; }
+	void	resetWindowResizedFlag() noexcept { resized = false; }
+	VkExtent2D	getFramebufferExtent() const noexcept { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
+	
 	void	createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
-	VkExtent2D	getFramebufferExtent() const { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
 	private:
 
+	static void	framebufferResizeCallback(GLFWwindow* window, int width, int height);
 	void	initWindow();
 
-	const int	width;
-	const int	height;
+	int		width;
+	int		height;
+	bool	resized = false;
 
 	std::string	title;
 	GLFWwindow*	window;

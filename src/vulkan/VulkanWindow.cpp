@@ -1,4 +1,5 @@
 #include "VulkanWindow.hpp"
+#include <iostream>
 
 namespace ve {
 
@@ -17,9 +18,11 @@ void	VulkanWindow::initWindow()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+	glfwSetWindowUserPointer(window, this);
+	glfwSetFramebufferSizeCallback(window, &framebufferResizeCallback);
 }
 
 void	VulkanWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
@@ -28,6 +31,15 @@ void	VulkanWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surfac
 	{
 		throw std::runtime_error("failed to create window surface");
 	}
+}
+
+void	VulkanWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+{
+	VulkanWindow*	vulkanWindow = reinterpret_cast<VulkanWindow*>(glfwGetWindowUserPointer(window));
+
+	vulkanWindow->resized = true;
+	vulkanWindow->width = width;
+	vulkanWindow->height = height;
 }
 
 }

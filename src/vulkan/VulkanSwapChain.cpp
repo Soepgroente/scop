@@ -12,6 +12,19 @@ namespace ve {
 
 VulkanSwapChain::VulkanSwapChain(VulkanDevice& deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent}
 {
+	init();
+}
+
+VulkanSwapChain::VulkanSwapChain(VulkanDevice& deviceRef, VkExtent2D extent, std::shared_ptr<VulkanSwapChain> previous) 
+	: device{deviceRef}, windowExtent{extent}, oldSwapChain{previous}
+{
+	init();
+
+	oldSwapChain = nullptr;
+}
+
+void	VulkanSwapChain::init()
+{
 	createSwapChain();
 	createImageViews();
 	createRenderPass();
@@ -125,9 +138,9 @@ VkResult	VulkanSwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, u
 
 	presentInfo.pImageIndices = imageIndex;
 
-	VkResult result = vkQueuePresentKHR(device.presentQueue(), &presentInfo);
-
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+	VkResult result = vkQueuePresentKHR(device.presentQueue(), &presentInfo);
 
 	return result;
 }
@@ -178,7 +191,7 @@ void	VulkanSwapChain::createSwapChain()
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
 
-	createInfo.oldSwapchain = VK_NULL_HANDLE;
+	createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
 	if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS)
 	{
@@ -401,7 +414,7 @@ VkSurfaceFormatKHR	VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<Vk
 {
 	for (const auto &availableFormat : availableFormats)
 	{
-		if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
+		if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
 			availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 		{
 			return availableFormat;
