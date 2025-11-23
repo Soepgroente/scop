@@ -1,9 +1,9 @@
 #pragma once
 
 #include "VulkanDevice.hpp"
-#include "VulkanModel.hpp"
-#include "VulkanPipeline.hpp"
-#include "VulkanSwapChain.hpp"
+#include "VulkanObject.hpp"
+#include "VulkanRenderer.hpp"
+#include "VulkanRenderSystem.hpp"
 #include "VulkanWindow.hpp"
 
 #include <GLFW/glfw3.h>
@@ -17,7 +17,8 @@ class Scop
 {
 	public:
 
-	Scop();
+	Scop() = delete;
+	Scop(std::string objPath);
 	~Scop();
 	
 	Scop(const Scop&) = delete;
@@ -30,23 +31,15 @@ class Scop
 
 	private:
 
-	void	loadModels();
-	void	createPipelineLayout();
-	void	createPipeline();
-	void	createCommandBuffers();
-	void	freeCommandBuffers();
-	void	drawFrame();
-	void	recreateSwapChain();
-	void	recordCommandBuffer(uint32_t imageIndex);
-	
+	void	loadObjects();
+
 	VulkanWindow	vulkanWindow{DEFAULT_HEIGHT, DEFAULT_WIDTH, "Scop"};
 	VulkanDevice	vulkanDevice{vulkanWindow};
-	std::unique_ptr<VulkanSwapChain>	vulkanSwapChainPtr;
-	
-	std::unique_ptr<VulkanPipeline>	vulkanPipelinePtr;
-	VkPipelineLayout				pipelineLayout;
-	std::vector<VkCommandBuffer>	commandBuffers;
-	std::unique_ptr<VulkanModel>	vulkanModelPtr;
+	VulkanRenderer	vulkanRenderer{vulkanWindow, vulkanDevice};
+
+	std::string							objModelPath;
+	std::vector<VulkanObject>			objects;
+
 };
 
 }

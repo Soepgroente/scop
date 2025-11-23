@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 		std::cerr << "Usage: " << argv[0] << " <path_to_obj_file>" << std::endl;
 		return 1;
 	}
-	ve::Scop	scop;
+	ve::Scop	scop(argv[1]);
 
 	try
 	{

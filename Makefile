@@ -6,23 +6,19 @@ DEBUG_FLAGS		:=	-g -fsanitize=address
 
 INCLUDES:=	-I./src -I./libs/glm \
 			-I/opt/homebrew/include \
-			-I./src/ObjectClasses \
+			-I./src/VulkanObjectClasses \
 			-I./src/VectorClasses \
 			-I./src/vulkan \
 			-I./src \
 
 SRCS	:=	main.cpp \
-			ObjectClasses/Camera.cpp \
-			ObjectClasses/Material.cpp \
-			ObjectClasses/Object.cpp \
-			ObjectClasses/ObjectParser.cpp \
-			ObjectClasses/Scene.cpp \
 			Scop.cpp \
-			VectorClasses/Vec3.cpp \
-			VectorClasses/Vec4.cpp \
 			vulkan/VulkanDevice.cpp \
 			vulkan/VulkanModel.cpp \
+			vulkan/VulkanObject.cpp \
 			vulkan/VulkanPipeline.cpp \
+			vulkan/VulkanRenderer.cpp \
+			vulkan/VulkanRenderSystem.cpp \
 			vulkan/VulkanSwapChain.cpp \
 			vulkan/VulkanWindow.cpp \
 
@@ -34,7 +30,7 @@ OBJS	:=	$(addprefix $(OBJDIR)/,$(notdir $(SRCS:%.cpp=%.o)))
 SHADERS_SRC	:=	src/shaders/shadyBusiness.vert \
 				src/shaders/shadyBusiness.frag \
 
-SHADER_COMPILE_CMD	:= $(shell which glslc)
+GLSLC				:= $(shell which glslc)
 SHADERS_COMPILED	:= $(SHADERS_SRC:%=%.spv)
 
 LIBS		:=	-L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit
@@ -69,7 +65,7 @@ $(NAME): $(OBJDIR) $(OBJS)
 	$(CC) $(CPPFLAGS) $(INCLUDES) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
 
 %.spv : %
-	$(SHADER_COMPILE_CMD) $< -o $@
+	$(GLSLC) $< -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -o $@

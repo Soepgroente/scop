@@ -10,8 +10,8 @@ VulkanModel::VulkanModel(VulkanDevice& device, const std::vector<Vertex>& vertic
 
 VulkanModel::~VulkanModel()
 {
-	vkDestroyBuffer(vulkanDevice.device(), vertexBuffer, nullptr);
 	vkFreeMemory(vulkanDevice.device(), vertexBufferMemory, nullptr);
+	vkDestroyBuffer(vulkanDevice.device(), vertexBuffer, nullptr);
 }
 
 void	VulkanModel::createVertexBuffers(const std::vector<Vertex>& vertices)

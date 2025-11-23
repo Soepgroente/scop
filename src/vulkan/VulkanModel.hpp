@@ -25,7 +25,7 @@ class VulkanModel
 		static std::vector<VkVertexInputAttributeDescription>	getAttributeDescriptions();
 	};
 
-	VulkanModel();
+	VulkanModel() = delete;
 	VulkanModel(VulkanDevice& vulkanDevice,	const std::vector<Vertex>& vertices);
 	~VulkanModel();
 

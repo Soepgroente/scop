@@ -40,6 +40,8 @@ class VulkanSwapChain
 	VkResult acquireNextImage(uint32_t* imageIndex);
 	VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
+	bool	compareSwapFormats(const VulkanSwapChain& otherSwapChain) const noexcept;
+
 	private:
 
 	void	init();
@@ -48,14 +50,15 @@ class VulkanSwapChain
 	void	createDepthResources();
 	void	createRenderPass();
 	void	createFramebuffers();
-	void	createSyncObjects();
+	void	createSyncVulkanObjects();
 
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-	VkFormat swapChainImageFormat;
-	VkExtent2D swapChainExtent;
+	VkFormat	swapChainImageFormat;
+	VkFormat	swapChainDepthFormat;
+	VkExtent2D	swapChainExtent;
 
 	std::vector<VkFramebuffer> swapChainFramebuffers;
 	VkRenderPass renderPass;

@@ -7,17 +7,19 @@
 #include <stdexcept>
 #include <vector>
 
-#include "Scene.hpp"
-#include "Object.hpp"
+#include "VulkanObject.hpp"
+#include "VulkanModel.hpp"
+
+namespace ve {
 
 class ObjectParser
 {
 	public:
 
-	static void	addObjectsFromFile(const std::string& objFilePath, Scene& scene);
-
-	private:
+	static std::vector<VulkanObject>	parseOBJFile(const std::string& objFilePath);
 
 	ObjectParser() = delete;
 	~ObjectParser() = delete;
 };
+
+} // namespace ve

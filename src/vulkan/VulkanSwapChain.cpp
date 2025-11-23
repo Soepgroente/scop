@@ -30,7 +30,7 @@ void	VulkanSwapChain::init()
 	createRenderPass();
 	createDepthResources();
 	createFramebuffers();
-	createSyncObjects();
+	createSyncVulkanObjects();
 }
 
 VulkanSwapChain::~VulkanSwapChain()
@@ -336,6 +336,7 @@ void	VulkanSwapChain::createFramebuffers()
 void	VulkanSwapChain::createDepthResources()
 {
 	VkFormat depthFormat = findDepthFormat();
+	swapChainDepthFormat = depthFormat;
 	VkExtent2D swapChainExtent = getSwapChainExtent();
 
 	depthImages.resize(imageCount());
@@ -385,7 +386,7 @@ void	VulkanSwapChain::createDepthResources()
 	}
 }
 
-void	VulkanSwapChain::createSyncObjects()
+void	VulkanSwapChain::createSyncVulkanObjects()
 {
 	imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -405,7 +406,7 @@ void	VulkanSwapChain::createSyncObjects()
 			vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
 			vkCreateFence(device.device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to create synchronization objects for a frame!");
+			throw std::runtime_error("failed to create synchronization VulkanObjects for a frame!");
 		}
 	}
 }
@@ -472,6 +473,12 @@ VkFormat	VulkanSwapChain::findDepthFormat()
 		{VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+}
+
+bool	VulkanSwapChain::compareSwapFormats(const VulkanSwapChain &otherSwapChain) const noexcept
+{
+	return swapChainImageFormat == otherSwapChain.swapChainImageFormat &&
+		swapChainDepthFormat == otherSwapChain.swapChainDepthFormat;
 }
 
 }
