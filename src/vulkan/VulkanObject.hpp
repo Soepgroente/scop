@@ -2,26 +2,19 @@
 
 #include "VulkanModel.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <memory>
 
 namespace ve {
 
-struct Transform2dComponent
+struct TransformComponent
 {
-	glm::vec2	translation{};
-	glm::vec2	scale{1.0f, 1.0f};
-	float		rotation;
+	glm::vec3	translation{};
+	glm::vec3	scale{1.0f, 1.0f, 1.0f};
+	glm::vec3	rotation{};
 
-	glm::mat2	mat2()
-	{
-		const float s = glm::sin(rotation);
-		const float c = glm::cos(rotation);
-
-		glm::mat2 rotationMat{{c, s}, {-s, c}};
-		glm::mat2 scaleMat{{scale.x, 0.0f}, {0.0f, scale.y}};
-
-		return rotationMat * scaleMat;
-	}
+	glm::mat4	mat4();
 };
 
 class VulkanObject
@@ -43,8 +36,8 @@ class VulkanObject
 	id_t	getID() const { return id; }
 
 	std::shared_ptr<VulkanModel>	model;
-	glm::vec3				color;
-	Transform2dComponent	transform2d;
+	glm::vec3			color;
+	TransformComponent	transform{};
 
 	// struct Material
 	// {

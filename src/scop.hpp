@@ -6,6 +6,11 @@
 #include "VulkanRenderSystem.hpp"
 #include "VulkanWindow.hpp"
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+
 #include <GLFW/glfw3.h>
 #include <array>
 #include <memory>

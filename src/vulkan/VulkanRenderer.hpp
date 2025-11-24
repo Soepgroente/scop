@@ -25,6 +25,7 @@ class VulkanRenderer
 	VulkanRenderer& operator=(const VulkanRenderer&) = delete;
 
 	VkRenderPass	getSwapChainRenderPass() const noexcept { return vulkanSwapChain->getRenderPass();}
+	float			getAspectRatio() const noexcept { return vulkanSwapChain->extentAspectRatio(); }
 	bool			isFrameInProgress() const noexcept { return isFrameStarted; }
 
 	VkCommandBuffer	getCurrentCommandBuffer() const

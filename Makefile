@@ -13,6 +13,7 @@ INCLUDES:=	-I./src -I./libs/glm \
 
 SRCS	:=	main.cpp \
 			Scop.cpp \
+			vulkan/Camera.cpp \
 			vulkan/VulkanDevice.cpp \
 			vulkan/VulkanModel.cpp \
 			vulkan/VulkanObject.cpp \
