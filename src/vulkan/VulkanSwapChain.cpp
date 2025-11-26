@@ -411,7 +411,7 @@ void	VulkanSwapChain::createSyncVulkanObjects()
 	}
 }
 
-VkSurfaceFormatKHR	VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)
+VkSurfaceFormatKHR	VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)	const noexcept
 {
 	for (const auto &availableFormat : availableFormats)
 	{
@@ -424,8 +424,7 @@ VkSurfaceFormatKHR	VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<Vk
 	return availableFormats[0];
 }
 
-VkPresentModeKHR	VulkanSwapChain::chooseSwapPresentMode(
-	const std::vector<VkPresentModeKHR> &availablePresentModes)
+VkPresentModeKHR	VulkanSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes)	const noexcept
 {
 	for (const auto &availablePresentMode : availablePresentModes)
 	{
@@ -435,19 +434,11 @@ VkPresentModeKHR	VulkanSwapChain::chooseSwapPresentMode(
 			return availablePresentMode;
 		}
 	}
-
-	// for (const auto &availablePresentMode : availablePresentModes) {
-	//   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-	//     std::cout << "Present mode: Immediate" << std::endl;
-	//     return availablePresentMode;
-	//   }
-	// }
-
 	std::cout << "Present mode: V-Sync" << std::endl;
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D	VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities)
+VkExtent2D	VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities)	const noexcept
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 	{
@@ -481,4 +472,4 @@ bool	VulkanSwapChain::compareSwapFormats(const VulkanSwapChain &otherSwapChain) 
 		swapChainDepthFormat == otherSwapChain.swapChainDepthFormat;
 }
 
-}
+} // namespace ve

@@ -15,6 +15,7 @@ SRCS	:=	main.cpp \
 			Scop.cpp \
 			vulkan/Camera.cpp \
 			vulkan/KeyboardInput.cpp \
+			vulkan/MouseInput.cpp \
 			vulkan/VulkanDevice.cpp \
 			vulkan/VulkanModel.cpp \
 			vulkan/VulkanObject.cpp \

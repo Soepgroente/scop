@@ -1,6 +1,7 @@
 #include "Scop.hpp"
 #include "Camera.hpp"
 #include "KeyboardInput.hpp"
+#include "MouseInput.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -26,7 +27,6 @@ void	Scop::run()
 	VulkanRenderSystem	renderSystem{vulkanDevice, vulkanRenderer.getSwapChainRenderPass()};
 	Camera camera{};
 
-	// camera.setViewDirection(glm::vec3{0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
 	camera.setViewTarget(glm::vec3{-1.0f, -2.0f, 2.0f}, glm::vec3{0.0f, 0.0f, 2.5f});
 	
 	std::chrono::high_resolution_clock::time_point	currentTime, newTime;
@@ -34,8 +34,9 @@ void	Scop::run()
 	float	aspectRatio = 1.0f;
 	VkCommandBuffer	commandBuffer = nullptr;
 
-	VulkanObject viewerObject = VulkanObject::createVulkanObject();
+	VulkanObject	viewerObject = VulkanObject::createVulkanObject();
 	KeyboardInput	keyboardInput{};
+	MouseInput		mouseInput{};
 
 	currentTime = std::chrono::high_resolution_clock::now();
 	while (vulkanWindow.shouldClose() == false)
@@ -43,8 +44,12 @@ void	Scop::run()
 		glfwPollEvents();
 		newTime = std::chrono::high_resolution_clock::now();
 		elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+
+		std::cout << "Elapsed time: " << elapsedTime << " s \n";
+
 		currentTime = newTime;
 		keyboardInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
+		mouseInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
 		camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 		aspectRatio = vulkanRenderer.getAspectRatio();
 		camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 100.0f);
@@ -57,19 +62,13 @@ void	Scop::run()
 			vulkanRenderer.endSwapChainRenderPass(commandBuffer);
 			vulkanRenderer.endFrame();
 		}
-		// begin = std::chrono::steady_clock::now();
-		// end = std::chrono::steady_clock::now();
-		// std::chrono::duration<double, std::milli>	elapsed = end - begin;
-		// std::cout << "Frame time: " << elapsed.count() << " ms \n";
 	}
 	vkDeviceWaitIdle(vulkanDevice.device());
 }
 
 static std::unique_ptr<VulkanModel> createCubeModel(VulkanDevice& device, glm::vec3 offset)
 {
-	std::vector<VulkanModel::Vertex> vertices {
-
-	// left face (white)
+	std::vector<VulkanModel::Vertex>	vertices{
 	{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
 	{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
 	{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
@@ -77,7 +76,6 @@ static std::unique_ptr<VulkanModel> createCubeModel(VulkanDevice& device, glm::v
 	{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
 	{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
 
-	// right face (yellow)
 	{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
 	{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
 	{{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
@@ -85,7 +83,6 @@ static std::unique_ptr<VulkanModel> createCubeModel(VulkanDevice& device, glm::v
 	{{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
 	{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
 
-	// top face (orange, remember y axis points down)
 	{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
 	{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
 	{{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
@@ -93,7 +90,6 @@ static std::unique_ptr<VulkanModel> createCubeModel(VulkanDevice& device, glm::v
 	{{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
 	{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
 
-	// bottom face (red)
 	{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
 	{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
 	{{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
@@ -101,7 +97,6 @@ static std::unique_ptr<VulkanModel> createCubeModel(VulkanDevice& device, glm::v
 	{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
 	{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
 
-	// nose face (blue)
 	{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
 	{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
 	{{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
@@ -109,15 +104,13 @@ static std::unique_ptr<VulkanModel> createCubeModel(VulkanDevice& device, glm::v
 	{{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
 	{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
 
-	// tail face (green)
 	{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
 	{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
 	{{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
 	{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
 	{{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-	{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}}
-	
-	};
+	{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}}};
+
 	for (auto& v : vertices)
 	{
 		v.pos += offset;

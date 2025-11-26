@@ -18,7 +18,7 @@ class VulkanWindow
 	VulkanWindow& operator=(const VulkanWindow&) = delete;
 	~VulkanWindow();
 
-	bool	shouldClose() const noexcept { return glfwWindowShouldClose(window); }
+	bool	shouldClose() const noexcept { return glfwWindowShouldClose(window) || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS; }
 	bool	wasWindowResized() const noexcept { return resized; }
 	void	resetWindowResizedFlag() noexcept { resized = false; }
 	VkExtent2D	getFramebufferExtent() const noexcept { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }

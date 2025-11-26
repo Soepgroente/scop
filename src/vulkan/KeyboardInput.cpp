@@ -19,8 +19,8 @@ void	KeyboardInput::move(GLFWwindow* window, VulkanObject& object, float deltaTi
 	object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -glm::half_pi<float>() + 0.01f, glm::half_pi<float>() - 0.01f);
 	object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
 
-	float	yaw = object.transform.rotation.y;
-	const glm::vec3	forwardDir{glm::sin(yaw), 0.0f, glm::cos(yaw)};
+	float	rot = object.transform.rotation.y;
+	const glm::vec3	forwardDir{glm::sin(rot), 0.0f, glm::cos(rot)};
 	const glm::vec3	rightDir{forwardDir.z, 0.0f, -forwardDir.x};
 	const glm::vec3	upDir{0.0f, -1.0f, 0.0f};
 
