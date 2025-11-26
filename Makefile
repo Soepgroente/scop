@@ -14,6 +14,7 @@ INCLUDES:=	-I./src -I./libs/glm \
 SRCS	:=	main.cpp \
 			Scop.cpp \
 			vulkan/Camera.cpp \
+			vulkan/KeyboardInput.cpp \
 			vulkan/VulkanDevice.cpp \
 			vulkan/VulkanModel.cpp \
 			vulkan/VulkanObject.cpp \
@@ -22,7 +23,6 @@ SRCS	:=	main.cpp \
 			vulkan/VulkanRenderSystem.cpp \
 			vulkan/VulkanSwapChain.cpp \
 			vulkan/VulkanWindow.cpp \
-
 
 SRCDIR	:=	src
 OBJDIR	:=	$(SRCDIR)/obj

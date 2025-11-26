@@ -1,5 +1,6 @@
 #include "Scop.hpp"
 #include "Camera.hpp"
+#include "KeyboardInput.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -25,16 +26,30 @@ void	Scop::run()
 	VulkanRenderSystem	renderSystem{vulkanDevice, vulkanRenderer.getSwapChainRenderPass()};
 	Camera camera{};
 
+	// camera.setViewDirection(glm::vec3{0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
+	camera.setViewTarget(glm::vec3{-1.0f, -2.0f, 2.0f}, glm::vec3{0.0f, 0.0f, 2.5f});
 	
-	// std::chrono::steady_clock::time_point	begin, end;
+	std::chrono::high_resolution_clock::time_point	currentTime, newTime;
+	float	elapsedTime = 0.0f;
+	float	aspectRatio = 1.0f;
+	VkCommandBuffer	commandBuffer = nullptr;
+
+	VulkanObject viewerObject = VulkanObject::createVulkanObject();
+	KeyboardInput	keyboardInput{};
+
+	currentTime = std::chrono::high_resolution_clock::now();
 	while (vulkanWindow.shouldClose() == false)
 	{
-		float aspect = vulkanRenderer.getAspectRatio();
-		// camera.setOrthographicProjection(-aspect, aspect, -1.0f, 1.0f, -1, 1.0f);
-		camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 100.0f);
 		glfwPollEvents();
+		newTime = std::chrono::high_resolution_clock::now();
+		elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+		currentTime = newTime;
+		keyboardInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
+		camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+		aspectRatio = vulkanRenderer.getAspectRatio();
+		camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 100.0f);
 
-		VkCommandBuffer commandBuffer = vulkanRenderer.beginFrame();
+		commandBuffer = vulkanRenderer.beginFrame();
 		if (commandBuffer != nullptr)
 		{
 			vulkanRenderer.beginSwapChainRenderPass(commandBuffer);

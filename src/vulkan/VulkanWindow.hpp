@@ -23,6 +23,7 @@ class VulkanWindow
 	void	resetWindowResizedFlag() noexcept { resized = false; }
 	VkExtent2D	getFramebufferExtent() const noexcept { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
 	
+	GLFWwindow*	getGLFWwindow() const noexcept { return window; }
 	void	createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
 	private:

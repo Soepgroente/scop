@@ -1,0 +1,103 @@
+# SPOCK.mtl
+# Basic material definitions for rendering the SPOCK.obj model (no textures).
+# Each material has ambient (Ka), diffuse (Kd), specular (Ks), shininess (Ns),
+# opacity (d) and illumination model (illum). Tweak values if you want a different look.
+
+# Boots - dark leather, slightly glossy
+newmtl boots
+Ka 0.02 0.02 0.02
+Kd 0.05 0.05 0.05
+Ks 0.50 0.50 0.50
+Ns 50.0
+d 1.0
+illum 2
+
+# Cloth - olive/greenish cloth
+newmtl cloth
+Ka 0.03 0.03 0.03
+Kd 0.15 0.18 0.08
+Ks 0.20 0.20 0.20
+Ns 25.0
+d 1.0
+illum 2
+
+# Badge - metallic, gold-like
+newmtl badge
+Ka 0.10 0.08 0.02
+Kd 0.80 0.65 0.10
+Ks 0.95 0.90 0.60
+Ns 200.0
+d 1.0
+illum 2
+
+# Generic material used in the OBJ
+newmtl Material3
+Ka 0.05 0.05 0.05
+Kd 0.50 0.50 0.50
+Ks 0.30 0.30 0.30
+Ns 30.0
+d 1.0
+illum 2
+
+# Right eye sclera
+newmtl Std_Eye_R
+Ka 0.02 0.02 0.02
+Kd 0.85 0.85 0.85
+Ks 0.15 0.15 0.15
+Ns 10.0
+d 1.0
+illum 2
+
+# Right cornea - nearly transparent, very glossy
+newmtl Std_Cornea_R
+Ka 0.00 0.00 0.00
+Kd 0.01 0.01 0.01
+Ks 1.00 1.00 1.00
+Ns 900.0
+d 0.05
+illum 3
+
+# Left eye sclera
+newmtl Std_Eye_L
+Ka 0.02 0.02 0.02
+Kd 0.85 0.85 0.85
+Ks 0.15 0.15 0.15
+Ns 10.0
+d 1.0
+illum 2
+
+# Left cornea - nearly transparent, very glossy
+newmtl Std_Cornea_L
+Ka 0.00 0.00 0.00
+Kd 0.01 0.01 0.01
+Ks 1.00 1.00 1.00
+Ns 900.0
+d 0.05
+illum 3
+
+# Body skin
+newmtl Std_Skin_Body
+Ka 0.04 0.03 0.03
+Kd 0.90 0.70 0.60
+Ks 0.18 0.15 0.14
+Ns 30.0
+d 1.0
+illum 2
+
+# Default placeholder material
+newmtl obj_default
+Ka 0.05 0.05 0.05
+Kd 0.60 0.60 0.60
+Ks 0.10 0.10 0.10
+Ns 10.0
+d 1.0
+illum 2
+
+# Head skin (separate to allow different spec/shine)
+newmtl Std_Skin_Head
+Ka 0.04 0.03 0.03
+Kd 0.92 0.74 0.64
+Ks 0.22 0.18 0.16
+Ns 40.0
+d 1.0
+illum 2

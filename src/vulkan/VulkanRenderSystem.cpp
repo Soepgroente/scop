@@ -76,14 +76,13 @@ void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vecto
 {
 	vulkanPipeline->bind(commandBuffer);
 
+	glm::mat4	projectionView = camera.getProjectionMatrix() * camera.getViewMatrix();
 	for (VulkanObject& object : objects)
 	{
-		object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.01f, glm::two_pi<float>());
-		object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.001f, glm::two_pi<float>());
 		SimplePushConstantData	push{};
 
 		push.color = object.color;
-		push.transform = camera.getProjectionMatrix() * object.transform.mat4();
+		push.transform = projectionView * object.transform.mat4();
 
 		vkCmdPushConstants(
 			commandBuffer,
