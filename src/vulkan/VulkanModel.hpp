@@ -44,7 +44,7 @@ class VulkanModel
 		std::vector<Vertex>		vertices{};
 		std::vector<uint32_t>	indices{};
 
-		void	loadModel(const std::string& filepath);
+		void	parseOBJFile(const std::string& filepath);
 	};
 
 	VulkanModel() = delete;

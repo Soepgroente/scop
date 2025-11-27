@@ -1,5 +1,6 @@
-#include "ObjectParser.hpp"
-#include <map>
+#include "VulkanDevice.hpp"
+#include <sstream>
+#include <fstream>
 
 namespace ve {
 
@@ -236,7 +237,7 @@ static void	material(VulkanObject& obj, std::istringstream& materialData)
 	mtllib - Material library references
 	l - Lines, curves, surfaces (often skipped in basic parsers) */
 
-std::vector<VulkanObject>	ObjectParser::parseOBJFile(const std::string& objFilePath)
+void	VulkanModel::Builder::parseOBJFile(const std::string& objFilePath)
 {
 	std::fstream	file(objFilePath);
 	int lineCount = 0;
@@ -259,9 +260,6 @@ std::vector<VulkanObject>	ObjectParser::parseOBJFile(const std::string& objFileP
 		{"mtllib", { &material } },
 		{"s", { &material } },
 	};
-
-	std::vector<VulkanObject> objs;
-	VulkanObject currentObj = VulkanObject::createVulkanObject();
 
 	while (file.eof() == false)
 	{

@@ -20,6 +20,7 @@ SRCS	:=	main.cpp \
 			vulkan/MouseInput.cpp \
 			vulkan/VulkanDevice.cpp \
 			vulkan/VulkanModel.cpp \
+			vulkan/VulkanModelOBJFileParser.cpp \
 			vulkan/VulkanObject.cpp \
 			vulkan/VulkanPipeline.cpp \
 			vulkan/VulkanRenderer.cpp \
@@ -36,7 +37,9 @@ UNAME_S	:=	$(shell uname -s)
 SHADERS_SRC	:=	src/shaders/shadyBusiness.vert \
 				src/shaders/shadyBusiness.frag \
 
-GLSLC				:= $(shell which glslc)
+GLSLC		:=	$(shell which glslangValidator) -V
+# GLSLC				:= $(shell which glslc)
+#source /opt/vulkan/1.4.328.1/setup-env.sh
 SHADERS_COMPILED	:= $(SHADERS_SRC:%=%.spv)
 
 LIBS		=	-L/opt/homebrew/lib -lglfw -framework Cocoa -framework IOKit -framework OpenGL
