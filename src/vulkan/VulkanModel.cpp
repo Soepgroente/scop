@@ -27,17 +27,17 @@ VulkanModel::~VulkanModel()
 	}
 }
 
-std::unique_ptr<VulkanModel>	VulkanModel::createModelFromFile(
-	VulkanDevice& device,
-	const std::string& filepath
-)
-{
-	Builder	builder{};
+// std::unique_ptr<VulkanModel>	VulkanModel::createModelFromFile(
+// 	VulkanDevice& device,
+// 	const std::string& filepath
+// )
+// {
+// 	Builder	builder{};
 
-	builder.loadModel(filepath);
-	std::cout << "Vertex count: " << builder.vertices.size() << "\n";
-	return std::make_unique<VulkanModel>(device, builder);
-}
+// 	builder.loadModel(filepath);
+// 	std::cout << "Vertex count: " << builder.vertices.size() << "\n";
+// 	return std::make_unique<VulkanModel>(device, builder);
+// }
 
 void	VulkanModel::createVertexBuffers(const std::vector<Vertex>& vertices)
 {

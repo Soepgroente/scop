@@ -96,7 +96,9 @@ void VulkanDevice::createInstance()
 
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
+	#ifdef VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
 	createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+	#endif
 
 	std::vector<const char*> extensions = getRequiredExtensions();
 	extensions.push_back("VK_KHR_portability_enumeration");
@@ -165,8 +167,11 @@ void	VulkanDevice::createLogicalDevice()
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
+	VkPhysicalDeviceFeatures supportedFeatures;
+    vkGetPhysicalDeviceFeatures(physicalDevice, &supportedFeatures);
+
 	VkPhysicalDeviceFeatures deviceFeatures = {};
-	deviceFeatures.samplerAnisotropy = VK_TRUE;
+	deviceFeatures.samplerAnisotropy = supportedFeatures.samplerAnisotropy;
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -215,13 +220,13 @@ bool	VulkanDevice::isDeviceSuitable(VkPhysicalDevice device)
 	QueueFamilyIndices indices = findQueueFamilies(device);
 	bool extensionsSupported = checkDeviceExtensionSupport(device);
 	bool swapChainAdequate = false;
-
+	
 	if (extensionsSupported == true)
 	{
 		SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
-
+	
 	VkPhysicalDeviceFeatures	supportedFeatures;
 	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
@@ -287,7 +292,7 @@ bool	VulkanDevice::checkValidationLayerSupport()
 	return true;
 }
 
-std::vector<const char *>	VulkanDevice::getRequiredExtensions()
+std::vector<const char*>	VulkanDevice::getRequiredExtensions()
 {
 	uint32_t glfwExtensionCount = 0;
 	const char **glfwExtensions;
@@ -295,11 +300,13 @@ std::vector<const char *>	VulkanDevice::getRequiredExtensions()
 
 	std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	if (enableValidationLayers)
+	#ifdef __APPLE__
+	extensions.push_back("VK_KHR_portability_subset");
+	#endif
+	if (enableValidationLayers == true)
 	{
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
-
 	return extensions;
 }
 
@@ -327,24 +334,23 @@ void	VulkanDevice::hasGflwRequiredInstanceExtensions()
 
 bool	VulkanDevice::checkDeviceExtensionSupport(VkPhysicalDevice device)
 {
-	uint32_t extensionCount;
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
-	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateDeviceExtensionProperties(
-		device,
-		nullptr,
-		&extensionCount,
-		availableExtensions.data()
-	);
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(
+        device,
+        nullptr,
+        &extensionCount,
+        availableExtensions.data()
+    );
 
-	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
-
+    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 	for (const auto &extension : availableExtensions)
 	{
 		requiredExtensions.erase(extension.extensionName);
 	}
-	return requiredExtensions.empty();
+    return requiredExtensions.empty();
 }
 
 QueueFamilyIndices	VulkanDevice::findQueueFamilies(VkPhysicalDevice device)
