@@ -6,6 +6,7 @@ DEBUG_FLAGS		:=	-g -fsanitize=address
 
 INCLUDES:=	-I./src -I./libs/glm \
 			-I/opt/homebrew/include \
+			-I./src/ObjectClasses \
 			-I./src/VulkanObjectClasses \
 			-I./src/VectorClasses \
 			-I./src/vulkan \

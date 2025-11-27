@@ -1,5 +1,5 @@
 #include "VulkanModel.hpp"
-#include "ObjectParser.hpp"
+// #include "ObjectParser.hpp"
 #include "VulkanObject.hpp"
 
 #include <iostream>
@@ -162,15 +162,15 @@ std::vector<VkVertexInputAttributeDescription>	VulkanModel::Vertex::getAttribute
 	return attributeDescriptions;
 }
 
-void	VulkanModel::Builder::loadModel(const std::string& filepath)
-{
-	std::vector<VulkanModel::Vertex>		tempVertices;
-	std::vector<VulkanModel::Material>		tempMaterials;
+// void	VulkanModel::Builder::loadModel(const std::string& filepath)
+// {
+// 	std::vector<VulkanModel::Vertex>		tempVertices;
+// 	std::vector<VulkanModel::Material>		tempMaterials;
 
 
-	ObjectParser::parseOBJFile(filepath.c_str(), *this);
+// 	ObjectParser::parseOBJFile(filepath.c_str(), *this);
 
 
-}
+// }
 
 }	// namespace ve
