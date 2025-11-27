@@ -33,51 +33,21 @@ class VulkanObject
 	static VulkanObject	createVulkanObject() { return VulkanObject(++currentID); }
 	static id_t		currentID;
 
-	id_t	getID() const { return id; }
-
 	std::shared_ptr<VulkanModel>	model;
 	glm::vec3			color;
 	TransformComponent	transform{};
-
-	// struct Material
-	// {
-	// 	bool		exists = false;
-	// 	std::string	name;
-	// 	glm::vec3	ambientClr;
-	// 	glm::vec3	diffuseClr;
-	// 	glm::vec3	specularClr;
-	// 	float		specularExp;
-	// 	float		transparency;
-	// 	int			illumModel;
-	// };
-
-	// struct Mesh
-	// {
-	// 	std::vector<ve::VulkanModel::Vertex>	vertices;
-	// 	std::vector<std::vector<int>>	faces;
-	// 	std::vector<glm::vec3>	normals;
-	// 	std::vector<glm::vec3>	textureCoords;
-	// };
-
-	// void	setName(const std::string& objName) { name = objName; }
-	// void	addFace(const std::vector<int>& face) { mesh.faces.push_back(face); }
-	// void	addSurfaceNormal(const glm::vec3& normal) { mesh.normals.push_back(normal); }
-	// void	addTextureCoord(const glm::vec3& texCoord) { mesh.textureCoords.push_back(texCoord); }
-	// void	addVertex(const ve::VulkanModel::Vertex& vertex) { mesh.vertices.push_back(vertex); }
-
-	// void	setMaterial(const Material& material);
-
-	// const std::string&	getName() const { return name; }
-	// std::vector<ve::VulkanModel::Vertex>	renderData() const { return mesh.vertices; }
+	
+	const std::string&	getName() const noexcept { return name; }
+	
+	void	setName(const std::string& objName) { name = objName; }
+	id_t	getID() const noexcept { return id; }
 	
 	private:
 
 	VulkanObject(id_t objID);
 
 	id_t		id;
-	// std::string	name;
-	// Mesh		mesh;
-	// Material	mat;
+	std::string	name;
 };
 
 } // namespace ve

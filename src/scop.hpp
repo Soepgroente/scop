@@ -42,8 +42,9 @@ class Scop
 	VulkanDevice	vulkanDevice{vulkanWindow};
 	VulkanRenderer	vulkanRenderer{vulkanWindow, vulkanDevice};
 
-	std::string							objModelPath;
-	std::vector<VulkanObject>			objects;
+	std::string					objModelPath;
+	std::vector<VulkanObject>	objects;
+	bool						rotateModel;
 
 };
 

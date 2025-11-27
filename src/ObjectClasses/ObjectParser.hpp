@@ -16,7 +16,7 @@ class ObjectParser
 {
 	public:
 
-	static std::vector<VulkanObject>	parseOBJFile(const std::string& objFilePath);
+	static std::vector<VulkanObject>	parseOBJFile(const char* objFilePath, VulkanModel& model);
 
 	ObjectParser() = delete;
 	~ObjectParser() = delete;
