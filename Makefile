@@ -20,7 +20,7 @@ SRCS	:=	main.cpp \
 			vulkan/MouseInput.cpp \
 			vulkan/VulkanDevice.cpp \
 			vulkan/VulkanModel.cpp \
-			vulkan/VulkanModelOBJFileParser.cpp \
+			vulkan/VulkanObjFileParser.cpp \
 			vulkan/VulkanObject.cpp \
 			vulkan/VulkanPipeline.cpp \
 			vulkan/VulkanRenderer.cpp \
@@ -60,10 +60,10 @@ debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
 debug: fclean $(SHADERS_COMPILED) $(NAME)
 
 run: all
-	./$(NAME) ./examples/teapot.obj
+	./$(NAME) ./models/teapot.obj
 
 rundebug: debug
-	./$(NAME) ./examples/teapot.obj
+	./$(NAME) ./models/teapot.obj
 
 rerun: fclean run
 

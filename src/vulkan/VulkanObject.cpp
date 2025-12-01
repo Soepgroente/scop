@@ -44,13 +44,4 @@ VulkanObject::~VulkanObject()
 {
 }
 
-// void	VulkanObject::setMaterial(const Material& material)
-// {
-// 	if (mat.exists == true)
-// 	{
-// 		throw std::runtime_error("Material already set for VulkanObject " + name);
-// 	}
-// 	mat = material;
-// }
-
 } // namespace ve

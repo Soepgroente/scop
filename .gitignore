@@ -2,5 +2,6 @@
 .vscode
 scop
 *.spv
+*.txt
 
 notes.md

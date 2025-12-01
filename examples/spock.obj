@@ -1,5 +1,5 @@
-mtllib SPOCK.mtl
-o SPOCK.obj
+mtllib spock.mtl
+o spock.obj
 v 2.245649 1.256960 -0.704053
 v 2.262889 0.944772 -0.700589
 v 2.192728 1.155427 -0.388598

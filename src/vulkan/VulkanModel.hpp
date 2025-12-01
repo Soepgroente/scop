@@ -21,22 +21,16 @@ class VulkanModel
 	{
 		glm::vec3	pos;
 		glm::vec3	color;
-		// glm::vec3	normal;
-		// glm::vec2	uv{};
+		glm::vec3	normal;
+		glm::vec2	uv{};
 
 		static std::vector<VkVertexInputBindingDescription>		getBindingDescriptions();
 		static std::vector<VkVertexInputAttributeDescription>	getAttributeDescriptions();
-	};
 
-	struct Material
-	{
-		std::string	name;
-		glm::vec3	ambientColor;
-		glm::vec3	diffuseColor;
-		glm::vec3	specularColor;
-		float		shininess;
-		float		opacity;
-		float		illuminationModel;
+		bool operator==(const Vertex& other) const noexcept
+		{
+			return pos == other.pos && color == other.color && normal == other.normal && uv == other.uv;
+		}
 	};
 
 	struct Builder
@@ -44,7 +38,7 @@ class VulkanModel
 		std::vector<Vertex>		vertices{};
 		std::vector<uint32_t>	indices{};
 
-		void	parseOBJFile(const std::string& filepath);
+		void	loadModel(const std::string &filepath);
 	};
 
 	VulkanModel() = delete;
@@ -54,28 +48,29 @@ class VulkanModel
 	VulkanModel(const VulkanModel&) = delete;
 	VulkanModel& operator=(const VulkanModel&) = delete;
 
-	static std::unique_ptr<VulkanModel>	createModelFromFile(
-		VulkanDevice& device,
-		const std::string& filepath
-	);
-
 	void	bind(VkCommandBuffer commandBuffer);
 	void	draw(VkCommandBuffer commandBuffer);
 
-	private:
+	void	setName(const std::string& name) { this->name = name; }
 
-	void	createVertexBuffers(const std::vector<Vertex>& vertices);
-	void	createIndexBuffers(const std::vector<uint32_t>& indices);
+	static std::unique_ptr<VulkanModel>	createModelFromFile(VulkanDevice& device, const std::string& filepath);
+
+	private:
+	
+	std::string			name;
+	bool				hasIndexBuffer = false;
 
 	VulkanDevice&		vulkanDevice;
 	VkBuffer			vertexBuffer;
 	VkDeviceMemory		vertexBufferMemory;
 	uint32_t			vertexCount;
-
-	bool				hasIndexBuffer = false;
+	
 	VkBuffer			indexBuffer;
 	VkDeviceMemory		indexBufferMemory;
 	uint32_t			indexCount;
+	
+	void	createVertexBuffers(const std::vector<Vertex>& vertices);
+	void	createIndexBuffers(const std::vector<uint32_t>& indices);
 };
 
 }

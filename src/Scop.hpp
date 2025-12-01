@@ -48,4 +48,6 @@ class Scop
 
 };
 
+std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath);
+
 }

@@ -83,8 +83,8 @@ void VulkanDevice::createInstance()
 	{
 		throw std::runtime_error("validation layers requested, but not available!");
 	}
-
 	VkApplicationInfo appInfo = {};
+
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = "LittleVulkanEngine App";
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -96,11 +96,12 @@ void VulkanDevice::createInstance()
 
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
-	#ifdef VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
+	#ifdef __APPLE__
 	createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 	#endif
 
 	std::vector<const char*> extensions = getRequiredExtensions();
+
 	extensions.push_back("VK_KHR_portability_enumeration");
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
@@ -300,9 +301,9 @@ std::vector<const char*>	VulkanDevice::getRequiredExtensions()
 
 	std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	#ifdef __APPLE__
-	extensions.push_back("VK_KHR_portability_subset");
-	#endif
+	// #ifdef __APPLE__
+	// extensions.push_back("VK_KHR_portability_subset");
+	// #endif
 	if (enableValidationLayers == true)
 	{
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

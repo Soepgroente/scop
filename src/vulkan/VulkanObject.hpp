@@ -5,8 +5,40 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <memory>
+#include <map>
 
 namespace ve {
+
+struct Material
+{
+	std::string	name;
+	glm::vec3	ambientClr;
+	glm::vec3	diffuseClr;
+	glm::vec3	specularClr;
+	float		shininess;
+	float		opacity;
+	float		illuminationModel;
+	bool		smoothShading;
+};
+
+struct ObjComponent
+{
+	std::vector<uint32_t>	faceIndices;
+	std::vector<uint32_t>	textureIndices;
+	std::vector<uint32_t>	normalIndices;
+	std::string				matName;
+};
+
+struct ObjInfo
+{
+	std::string					name;
+	std::string					mtlFile;
+	std::vector<glm::vec3>		vertices;
+	std::vector<glm::vec3>		textureCoords;
+	std::vector<glm::vec3>		normals;
+	std::vector<ObjComponent>	components;
+	std::map<std::string, Material>		materials;
+};
 
 struct TransformComponent
 {
@@ -34,12 +66,9 @@ class VulkanObject
 	static id_t		currentID;
 
 	std::shared_ptr<VulkanModel>	model;
-	glm::vec3			color;
-	TransformComponent	transform{};
+	glm::vec3						color;
+	TransformComponent				transform{};
 	
-	const std::string&	getName() const noexcept { return name; }
-	
-	void	setName(const std::string& objName) { name = objName; }
 	id_t	getID() const noexcept { return id; }
 	
 	private:
@@ -47,7 +76,8 @@ class VulkanObject
 	VulkanObject(id_t objID);
 
 	id_t		id;
-	std::string	name;
 };
+
+std::ostream&	operator<<(std::ostream& os, const ObjInfo& obj);
 
 } // namespace ve

@@ -1,9 +1,9 @@
 #include "VulkanModel.hpp"
 // #include "ObjectParser.hpp"
 #include "VulkanObject.hpp"
+#include "Scop.hpp"
 
 #include <iostream>
-
 
 namespace ve {
 
@@ -162,15 +162,26 @@ std::vector<VkVertexInputAttributeDescription>	VulkanModel::Vertex::getAttribute
 	return attributeDescriptions;
 }
 
-// void	VulkanModel::Builder::loadModel(const std::string& filepath)
-// {
-// 	std::vector<VulkanModel::Vertex>		tempVertices;
-// 	std::vector<VulkanModel::Material>		tempMaterials;
+std::unique_ptr<VulkanModel>	VulkanModel::createModelFromFile(VulkanDevice& device, const std::string& filepath)
+{
+	Builder	builder{};
+
+	builder.loadModel(filepath);
+	return std::make_unique<VulkanModel>(device, builder);
+}
+
+void	VulkanModel::Builder::loadModel(const std::string &filepath)
+{
+	std::vector<ObjInfo>		objs = parseOBJFile(filepath);
+
+	// for (const ObjInfo& obj : objs)
+	// {
+	// 	std::cout << obj;
+	// }
+	vertices.clear();
+	indices.clear();
 
 
-// 	ObjectParser::parseOBJFile(filepath.c_str(), *this);
-
-
-// }
+}
 
 }	// namespace ve
