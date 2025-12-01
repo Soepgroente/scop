@@ -66,7 +66,7 @@ static void	addVertex(ObjInfo& obj, std::istringstream& vertexData)
 
 static void	addTextureCoord(ObjInfo& obj, std::istringstream& texCoordData)
 {
-	float	u, v = 0.0f, w = 0.0f;
+	float	u, v = 0.0f;
 
 	u = getNextFloat(texCoordData);
 	if (texCoordData.eof() == false)
@@ -75,13 +75,9 @@ static void	addTextureCoord(ObjInfo& obj, std::istringstream& texCoordData)
 	}
 	if (texCoordData.eof() == false)
 	{
-		w = getNextFloat(texCoordData);
-	}
-	if (texCoordData.eof() == false)
-	{
 		throw std::runtime_error("Invalid texture coordinate format");
 	}
-	obj.textureCoords.push_back(glm::vec3(u, v, w));
+	obj.textureCoords.push_back(glm::vec2(u, v));
 }
 
 static void	addSurfaceNormal(ObjInfo& obj, std::istringstream& normalData)
@@ -112,21 +108,23 @@ static void	addFace(ObjInfo& obj, std::istringstream& faceData)
 	{
 		faceData >> vertex;
 		size_t		firstSlash = vertex.find('/');
+		uint32_t 	tex = 0, norm = 0;
 
 		objComp.faceIndices.push_back(static_cast<uint32_t>
 			(std::stoi(vertex.substr(0, firstSlash))) - 1);
 		if (firstSlash != std::string::npos)
 		{
 			size_t	secondSlash = vertex.find('/', firstSlash + 1);
+			
 			if (secondSlash > firstSlash + 1)
 			{
-				objComp.textureIndices.push_back(static_cast<uint32_t>
-					(std::stoi(vertex.substr(firstSlash + 1, secondSlash - firstSlash - 1))) - 1);
+				tex = static_cast<uint32_t> (std::stoi(vertex.substr(firstSlash + 1, secondSlash - firstSlash - 1))) - 1;
+				objComp.textureIndices.push_back(tex);
 			}
 			if (secondSlash != std::string::npos)
 			{
-				objComp.normalIndices.push_back(static_cast<uint32_t>
-					(std::stoi(vertex.substr(secondSlash + 1))) - 1);
+				norm = static_cast<uint32_t> (std::stoi(vertex.substr(secondSlash + 1))) - 1;
+				objComp.normalIndices.push_back(norm);
 			}
 		}
 	}
@@ -227,25 +225,6 @@ static void	parseMaterial(ObjInfo& obj, std::istringstream& materialData)
 				}
 			} }
 		},
-		{"s", { [&](std::istringstream& matData)
-			{
-				std::string	smoothShading;
-				
-				matData >> smoothShading;
-				if (matData.eof() == false)
-				{
-					throw std::runtime_error("Invalid smooth shading format");
-				}
-				if (smoothShading == "1" || smoothShading == "on")
-				{
-					mats[currentMat].smoothShading = true;
-				}
-				else
-				{
-					mats[currentMat].smoothShading = false;
-				}
-			} }
-		},
 	};
 	while (file.eof() == false)
 	{
@@ -289,6 +268,29 @@ static void	useMaterial(ObjInfo& obj, std::istringstream& matData)
 	}
 }
 
+static void	smoothShading(ObjInfo& obj, std::istringstream& smoothData)
+{
+	std::string	smoothGroup;
+
+	smoothData >> smoothGroup;
+	if (smoothData.eof() == false || smoothGroup.empty())
+	{
+		throw std::runtime_error("Invalid smoothing group format");
+	}
+	if (smoothGroup == "1" || smoothGroup == "on")
+	{
+		obj.materials[obj.components.back().matName].smoothShading = true;
+	}
+	else if (smoothGroup == "0" || smoothGroup == "off")
+	{
+		obj.materials[obj.components.back().matName].smoothShading = false;
+	}
+	else
+	{
+		throw std::runtime_error("Unknown smoothing group: " + smoothGroup);
+	}
+}
+
 static void	nullFunc(ObjInfo& obj, std::istringstream& data)
 {
 	/*	Not implemented	*/
@@ -300,8 +302,8 @@ static void	nullFunc(ObjInfo& obj, std::istringstream& data)
 
 	v - Vertices (3-4 floats)
 	vt - Texture coordinates (1-3 floats)
-	vn - Vertex normals (3 floats)
-	f - Faces (vertex/texture/normal indices)
+	vn - Vertex normals (2 floats, ignoring potential 3rd for 2d Textures)
+	f - Faces (format: vertex/texture/normal)
 
 	o - VulkanObject names
 	s - Smoothing groups
@@ -316,6 +318,7 @@ std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath)
 	std::fstream	file(objFilePath);
 	int lineCount = 0;
 
+	std::cout << "Parsing OBJ file: " << objFilePath << std::endl;
 	if (file.is_open() == false)
 	{
 		std::cerr << "Error: Could not open OBJ file: " << objFilePath << std::endl;
@@ -331,6 +334,7 @@ std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath)
 		{"f", { &addFace } },
 		{"usemtl", { &useMaterial } },
 		{"mtllib", { &parseMaterial } },
+		{"s", { &smoothShading } },
 		{"g", { &nullFunc } },
 		{"l", { &nullFunc } },
 	};

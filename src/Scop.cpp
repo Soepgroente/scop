@@ -32,7 +32,7 @@ void	Scop::run()
 	VulkanRenderSystem	renderSystem{vulkanDevice, vulkanRenderer.getSwapChainRenderPass()};
 	Camera camera{};
 
-	camera.setViewTarget(glm::vec3{-1.0f, -2.0f, 2.0f}, glm::vec3{0.0f, 0.0f, 2.5f});
+	camera.setViewTarget(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f});
 	
 	std::chrono::high_resolution_clock::time_point	currentTime, newTime;
 	float	elapsedTime = 0.0f;

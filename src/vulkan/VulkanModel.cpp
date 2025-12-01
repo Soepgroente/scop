@@ -174,14 +174,28 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 {
 	std::vector<ObjInfo>		objs = parseOBJFile(filepath);
 
-	// for (const ObjInfo& obj : objs)
-	// {
-	// 	std::cout << obj;
-	// }
 	vertices.clear();
 	indices.clear();
 
+	for (const ObjInfo& obj : objs)
+	{
+		for (size_t i = 0; i < obj.vertices.size(); i++)
+		{
+			Vertex	vertex{};
 
+			vertex.pos = obj.vertices[i];
+			vertex.color = generateRandomColor();
+			if (obj.textureCoords.size() > i)
+			{
+				vertex.textureUv = obj.textureCoords[i];
+			}
+			if (obj.normals.size() > i)
+			{
+				vertex.normal = obj.normals[i];
+			}
+			vertices.push_back(vertex);
+		}
+	}
 }
 
 }	// namespace ve

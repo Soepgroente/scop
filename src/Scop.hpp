@@ -49,5 +49,6 @@ class Scop
 };
 
 std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath);
+glm::vec3				generateRandomColor();
 
 }

@@ -27,6 +27,7 @@ SRCS	:=	main.cpp \
 			vulkan/VulkanRenderSystem.cpp \
 			vulkan/VulkanSwapChain.cpp \
 			vulkan/VulkanWindow.cpp \
+			utils.cpp \
 
 SRCDIR	:=	src
 OBJDIR	:=	$(SRCDIR)/obj

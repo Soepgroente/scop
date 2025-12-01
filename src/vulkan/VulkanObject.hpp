@@ -34,7 +34,7 @@ struct ObjInfo
 	std::string					name;
 	std::string					mtlFile;
 	std::vector<glm::vec3>		vertices;
-	std::vector<glm::vec3>		textureCoords;
+	std::vector<glm::vec2>		textureCoords;
 	std::vector<glm::vec3>		normals;
 	std::vector<ObjComponent>	components;
 	std::map<std::string, Material>		materials;

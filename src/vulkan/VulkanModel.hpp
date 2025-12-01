@@ -22,14 +22,17 @@ class VulkanModel
 		glm::vec3	pos;
 		glm::vec3	color;
 		glm::vec3	normal;
-		glm::vec2	uv{};
+		glm::vec2	textureUv{};
 
 		static std::vector<VkVertexInputBindingDescription>		getBindingDescriptions();
 		static std::vector<VkVertexInputAttributeDescription>	getAttributeDescriptions();
 
 		bool operator==(const Vertex& other) const noexcept
 		{
-			return pos == other.pos && color == other.color && normal == other.normal && uv == other.uv;
+			return	pos == other.pos &&
+					color == other.color &&
+					normal == other.normal &&
+					textureUv == other.textureUv;
 		}
 	};
 

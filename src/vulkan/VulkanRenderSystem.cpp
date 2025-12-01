@@ -81,9 +81,9 @@ void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vecto
 	{
 		SimplePushConstantData	push{};
 
-		objects[0].transform.rotation.y = glm::mod(objects[0].transform.rotation.y + 0.01f, glm::two_pi<float>());
-		objects[0].transform.rotation.x = glm::mod(objects[0].transform.rotation.x + 0.005f, glm::two_pi<float>());
-		objects[0].transform.rotation.z = glm::mod(objects[0].transform.rotation.z + 0.002f, glm::two_pi<float>());
+		// objects[0].transform.rotation.y = glm::mod(objects[0].transform.rotation.y + 0.01f, glm::two_pi<float>());
+		// objects[0].transform.rotation.x = glm::mod(objects[0].transform.rotation.x + 0.005f, glm::two_pi<float>());
+		// objects[0].transform.rotation.z = glm::mod(objects[0].transform.rotation.z + 0.002f, glm::two_pi<float>());
 		push.color = object.color;
 		push.transform = projectionView * object.transform.mat4();
 
