@@ -27,18 +27,6 @@ VulkanModel::~VulkanModel()
 	}
 }
 
-// std::unique_ptr<VulkanModel>	VulkanModel::createModelFromFile(
-// 	VulkanDevice& device,
-// 	const std::string& filepath
-// )
-// {
-// 	Builder	builder{};
-
-// 	builder.loadModel(filepath);
-// 	std::cout << "Vertex count: " << builder.vertices.size() << "\n";
-// 	return std::make_unique<VulkanModel>(device, builder);
-// }
-
 void	VulkanModel::createVertexBuffers(const std::vector<Vertex>& vertices)
 {
 	vertexCount = static_cast<uint32_t>(vertices.size());
@@ -177,6 +165,8 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 	vertices.clear();
 	indices.clear();
 
+	std::unordered_map<Vertex, uint32_t>	uniqueVertices{};
+
 	for (const ObjInfo& obj : objs)
 	{
 		for (const ObjComponent& component : obj.components)
@@ -188,6 +178,7 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 				Vertex	vertex{};
 
 				vertex.pos = obj.vertices[component.faceIndices[i]];
+				// vertex.color = generateRandomColor();
 				if (obj.materials.find(component.matName) != obj.materials.end())
 				{
 					vertex.color = obj.materials.at(component.matName).diffuseClr;
@@ -204,7 +195,12 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 				{
 					vertex.normal = obj.normals[component.normalIndices[i]];
 				}
-				vertices.push_back(vertex);
+				if (uniqueVertices.count(vertex) == 0)
+				{
+					uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back(vertex);
+				}
+				indices.push_back(uniqueVertices[vertex]);
 			}
 		}
 	}

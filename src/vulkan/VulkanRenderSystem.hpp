@@ -24,7 +24,7 @@ class VulkanRenderSystem
 	VulkanRenderSystem(const VulkanRenderSystem&) = delete;
 	VulkanRenderSystem& operator=(const VulkanRenderSystem&) = delete;
 	
-	void	renderObjects(VkCommandBuffer commandBuffer, std::vector<VulkanObject>& objects, const Camera& camera);
+	void	renderObjects(VkCommandBuffer commandBuffer, std::vector<VulkanObject>& objects, const Camera& camera, bool rotateModel);
 
 	private:
 

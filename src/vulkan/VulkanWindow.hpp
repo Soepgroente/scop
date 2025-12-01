@@ -21,6 +21,7 @@ class VulkanWindow
 	bool	shouldClose() const noexcept { return glfwWindowShouldClose(window) || glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS; }
 	bool	wasWindowResized() const noexcept { return resized; }
 	void	resetWindowResizedFlag() noexcept { resized = false; }
+	float	getAspectRatio() const noexcept { return static_cast<float>(width) / static_cast<float>(height); }
 	VkExtent2D	getFramebufferExtent() const noexcept { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
 	
 	GLFWwindow*	getGLFWwindow() const noexcept { return window; }

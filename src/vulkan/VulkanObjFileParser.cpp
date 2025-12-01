@@ -99,11 +99,6 @@ static void	addFace(ObjInfo& obj, std::istringstream& faceData)
 	std::string	vertex;
 	ObjComponent&	objComp = obj.components.back();
 
-	if (objComp.matName.empty() == true)
-	{
-		objComp.matName = "default";
-	}
-
 	while (faceData.eof() == false)
 	{
 		faceData >> vertex;
@@ -222,6 +217,15 @@ static void	parseMaterial(ObjInfo& obj, std::istringstream& materialData)
 				if (matData.eof() == false)
 				{
 					throw std::runtime_error("Invalid illumination model format");
+				}
+			} }
+		},
+		{"Ni", { [&](std::istringstream& matData)
+			{
+				mats[currentMat].refractionIndex = getNextFloat(matData);
+				if (matData.eof() == false)
+				{
+					throw std::runtime_error("Invalid refraction index format");
 				}
 			} }
 		},
@@ -366,10 +370,18 @@ std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath)
 		}
 		catch (const std::exception& e)
 		{
-			std::cerr << e.what() << std::endl;
-			std::cerr << "Error parsing OBJ file: " << objFilePath << " at line " << lineCount << ": " << line << std::endl;
-			file.close();
-			std::exit(EXIT_FAILURE);
+			const std::string error = e.what();
+			if (error.find("Could not open material file") != std::string::npos)
+			{
+				std::cerr << error << std::endl;
+			}
+			else
+			{
+				std::cerr << error << std::endl;
+				std::cerr << "Error parsing OBJ file: " << objFilePath << " at line " << lineCount << ": " << line << std::endl;
+				file.close();
+				std::exit(EXIT_FAILURE);
+			}
 		}
 	}
 	objs.emplace_back(std::move(currentObj));

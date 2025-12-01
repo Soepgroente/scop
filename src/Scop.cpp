@@ -32,7 +32,7 @@ void	Scop::run()
 	VulkanRenderSystem	renderSystem{vulkanDevice, vulkanRenderer.getSwapChainRenderPass()};
 	Camera camera{};
 
-	camera.setViewTarget(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f});
+	camera.setViewTarget(glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f});
 	
 	std::chrono::high_resolution_clock::time_point	currentTime, newTime;
 	float	elapsedTime = 0.0f;
@@ -44,9 +44,10 @@ void	Scop::run()
 	MouseInput		mouseInput{};
 
 	currentTime = std::chrono::high_resolution_clock::now();
-	rotateModel = true;
+	rotateModel = false;
 	int frameCount = 0;
 
+	viewerObject.transform.translation = {0.0f, 0.0f, -10.0f};
 	while (vulkanWindow.shouldClose() == false)
 	{
 		frameCount = (frameCount + 1) % 1000;
@@ -55,19 +56,24 @@ void	Scop::run()
 		elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 		currentTime = newTime;
 
-		std::cout << "\rFrames per second: " << static_cast<int> (1.0f / elapsedTime) << " " << std::flush;
-	
+		if (glfwGetKey(vulkanWindow.getGLFWwindow(), GLFW_KEY_KP_ADD) == GLFW_PRESS)
+		{
+			rotateModel = !rotateModel;
+		}
 		keyboardInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
 		mouseInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
 		camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 		aspectRatio = vulkanRenderer.getAspectRatio();
 		camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 100.0f);
-
+		
 		commandBuffer = vulkanRenderer.beginFrame();
 		if (commandBuffer != nullptr)
 		{
 			vulkanRenderer.beginSwapChainRenderPass(commandBuffer);
-			renderSystem.renderObjects(commandBuffer, objects, camera);
+			renderSystem.renderObjects(commandBuffer, objects, camera, rotateModel);
+			newTime = std::chrono::high_resolution_clock::now();
+			std::cout << "\rFrames per second: " << static_cast<int> (1.0f / elapsedTime) << ", Frame time: ";
+			std::cout << std::chrono::duration<float, std::chrono::milliseconds::period>(newTime - currentTime).count() << "ms " << std::flush;		
 			vulkanRenderer.endSwapChainRenderPass(commandBuffer);
 			vulkanRenderer.endFrame();
 		}

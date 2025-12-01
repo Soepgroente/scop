@@ -72,7 +72,7 @@ void	VulkanRenderSystem::createPipeline(VkRenderPass renderPass)
 	);
 }
 
-void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vector<VulkanObject>& objects, const Camera& camera)
+void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vector<VulkanObject>& objects, const Camera& camera, bool rotateModel)
 {
 	vulkanPipeline->bind(commandBuffer);
 
@@ -81,9 +81,12 @@ void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vecto
 	{
 		SimplePushConstantData	push{};
 
-		// objects[0].transform.rotation.y = glm::mod(objects[0].transform.rotation.y + 0.01f, glm::two_pi<float>());
-		// objects[0].transform.rotation.x = glm::mod(objects[0].transform.rotation.x + 0.005f, glm::two_pi<float>());
-		// objects[0].transform.rotation.z = glm::mod(objects[0].transform.rotation.z + 0.002f, glm::two_pi<float>());
+		if (rotateModel == true)
+		{
+			object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.01f, glm::two_pi<float>());
+			// object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
+			// object.transform.rotation.z = glm::mod(object.transform.rotation.z + 0.002f, glm::two_pi<float>());
+		}
 		push.color = object.color;
 		push.transform = projectionView * object.transform.mat4();
 

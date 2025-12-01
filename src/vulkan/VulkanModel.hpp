@@ -18,21 +18,6 @@
 #include <vector>
 #include <unordered_map>
 
-namespace std {
-template<>
-struct hash<ve::VulkanModel::Vertex>
-{
-	size_t operator()(ve::VulkanModel::Vertex const& vertex) const
-	{
-		size_t seed = 0;
-
-		ve::hashCombine(seed, vertex.pos, vertex.color, vertex.normal, vertex.textureUv);
-		return seed;
-	}
-};
-
-}	// namespace std
-
 namespace ve {
 
 class VulkanModel
@@ -99,3 +84,19 @@ class VulkanModel
 };
 
 }
+
+namespace std {
+
+template<>
+struct hash<ve::VulkanModel::Vertex>
+{
+	size_t operator()(ve::VulkanModel::Vertex const& vertex) const
+	{
+		size_t seed = 0;
+
+		ve::hashCombine(seed, vertex.pos, vertex.color, vertex.normal, vertex.textureUv);
+		return seed;
+	}
+};
+
+}	// namespace std

@@ -18,6 +18,7 @@ struct Material
 	float		shininess;
 	float		opacity;
 	float		illuminationModel;
+	float		refractionIndex;
 	bool		smoothShading;
 };
 

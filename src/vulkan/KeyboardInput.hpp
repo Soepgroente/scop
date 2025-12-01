@@ -23,6 +23,7 @@ class KeyboardInput
 		int lookRight = GLFW_KEY_RIGHT;
 		int lookUp = GLFW_KEY_UP;
 		int lookDown = GLFW_KEY_DOWN;
+		int rotate = GLFW_KEY_KP_ADD;
 	};
 
 	void	move(GLFWwindow* window, VulkanObject& object, float deltaTime);
@@ -30,7 +31,7 @@ class KeyboardInput
 	KeyMappings	keys{};
 
 	float	movementSpeed{3.0f};
-	float	lookSpeed{1.5f};
+	float	lookSpeed{0.8f};
 };
 
 } // namespace ve
