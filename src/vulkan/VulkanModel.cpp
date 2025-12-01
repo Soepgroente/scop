@@ -179,21 +179,33 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 
 	for (const ObjInfo& obj : objs)
 	{
-		for (size_t i = 0; i < obj.vertices.size(); i++)
+		for (const ObjComponent& component : obj.components)
 		{
-			Vertex	vertex{};
+			size_t faces = component.faceIndices.size();
 
-			vertex.pos = obj.vertices[i];
-			vertex.color = generateRandomColor();
-			if (obj.textureCoords.size() > i)
+			for (size_t i = 0; i < faces; i++)
 			{
-				vertex.textureUv = obj.textureCoords[i];
+				Vertex	vertex{};
+
+				vertex.pos = obj.vertices[component.faceIndices[i]];
+				if (obj.materials.find(component.matName) != obj.materials.end())
+				{
+					vertex.color = obj.materials.at(component.matName).diffuseClr;
+				}
+				else
+				{
+					vertex.color = generateRandomColor();
+				}
+				if (obj.textureCoords.size() > i)
+				{
+					vertex.textureUv = obj.textureCoords[component.textureIndices[i]];
+				}
+				if (obj.normals.size() > i)
+				{
+					vertex.normal = obj.normals[component.normalIndices[i]];
+				}
+				vertices.push_back(vertex);
 			}
-			if (obj.normals.size() > i)
-			{
-				vertex.normal = obj.normals[i];
-			}
-			vertices.push_back(vertex);
 		}
 	}
 }

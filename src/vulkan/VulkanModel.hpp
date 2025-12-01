@@ -1,15 +1,37 @@
 #pragma once
 
 #include "VulkanDevice.hpp"
+#include "VulkanUtils.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
+
+#include <vulkan/vulkan.h>
+
 #include <cassert>
 #include <cstring>
 #include <memory>
 #include <vector>
+#include <unordered_map>
+
+namespace std {
+template<>
+struct hash<ve::VulkanModel::Vertex>
+{
+	size_t operator()(ve::VulkanModel::Vertex const& vertex) const
+	{
+		size_t seed = 0;
+
+		ve::hashCombine(seed, vertex.pos, vertex.color, vertex.normal, vertex.textureUv);
+		return seed;
+	}
+};
+
+}	// namespace std
 
 namespace ve {
 
