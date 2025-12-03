@@ -21,6 +21,10 @@ void	VulkanWindow::initWindow()
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+	if (window == nullptr)
+	{
+		throw std::runtime_error("failed to create GLFW window");
+	}
 	glfwSetWindowUserPointer(window, this);
 	glfwSetFramebufferSizeCallback(window, &framebufferResizeCallback);
 }

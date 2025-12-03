@@ -86,23 +86,23 @@ void VulkanDevice::createInstance()
 	VkApplicationInfo appInfo = {};
 
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "LittleVulkanEngine App";
+	appInfo.pApplicationName = "Scop";
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.pEngineName = "No Engine";
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.apiVersion = VK_API_VERSION_1_0;
+	appInfo.apiVersion = VK_API_VERSION_1_1;
 
-	VkInstanceCreateInfo createInfo = {};
+	VkInstanceCreateInfo createInfo{};
 
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
-	#ifdef __APPLE__
-	createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-	#endif
-
+	
 	std::vector<const char*> extensions = getRequiredExtensions();
 
+	#ifdef __APPLE__
 	extensions.push_back("VK_KHR_portability_enumeration");
+	createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+	#endif
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -151,6 +151,9 @@ void VulkanDevice::pickPhysicalDevice()
 
 void	VulkanDevice::createLogicalDevice()
 {
+	#ifdef __APPLE__
+	deviceExtensions.push_back("VK_KHR_portability_subset");
+	#endif
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -296,14 +299,13 @@ bool	VulkanDevice::checkValidationLayerSupport()
 std::vector<const char*>	VulkanDevice::getRequiredExtensions()
 {
 	uint32_t glfwExtensionCount = 0;
-	const char **glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
+	const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+	if (glfwExtensions == nullptr)
+	{
+		throw std::runtime_error("failed to get required GLFW extensions");
+	}
 	std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	// #ifdef __APPLE__
-	// extensions.push_back("VK_KHR_portability_subset");
-	// #endif
 	if (enableValidationLayers == true)
 	{
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

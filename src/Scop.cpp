@@ -89,6 +89,12 @@ void	Scop::loadObjects()
 	object.model = std::move(model);
 	object.color = {1.0f, 0.4f, 0.2f};
 	objects.push_back(std::move(object));
+	for (size_t i = 0; i < 5; i++)
+	{
+		ImageInfo	texture = loadImage("textures/derp" + std::to_string(i + 1) + ".jpeg");
+		textures.push_back(texture);
+		std::cout << "Loaded texture " << i + 1 << " with size " << texture.width << "x" << texture.height << std::endl;
+	}
 }
 
 } // namespace ve

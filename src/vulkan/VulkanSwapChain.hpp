@@ -30,8 +30,8 @@ class VulkanSwapChain
 	VkRenderPass	getRenderPass() const noexcept { return renderPass; }
 	VkImageView		getImageView(int index) const { return swapChainImageViews[index]; }
 	size_t			imageCount() const noexcept { return swapChainImages.size(); }
-	VkFormat		getSwapChainImageFormat() const noexcept { return swapChainImageFormat; }
 	VkExtent2D		getSwapChainExtent() const noexcept { return swapChainExtent; }
+	VkFormat		getSwapChainImageFormat() const noexcept { return swapChainImageFormat; }
 	uint32_t		width() const noexcept { return swapChainExtent.width; }
 	uint32_t		height() const noexcept { return swapChainExtent.height; }
 	float			extentAspectRatio() { return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);}

@@ -58,7 +58,7 @@ class VulkanRenderer
 	std::vector<VkCommandBuffer>		commandBuffers;
 
 	uint32_t	currentImageIndex;
-	int			currentFrameIndex;
+	uint32_t	currentFrameIndex;
 	bool		isFrameStarted;
 };
 

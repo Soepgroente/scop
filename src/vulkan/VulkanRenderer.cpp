@@ -73,6 +73,7 @@ void	VulkanRenderer::freeCommandBuffers()
 VkCommandBuffer	VulkanRenderer::beginFrame()
 {
 	assert(isFrameStarted == false && "Can't call beginFrame while already in progress");
+	assert(currentFrameIndex < 2 && "Current frame index out of bounds");
 
 	VkResult	result = vulkanSwapChain->acquireNextImage(&currentImageIndex);
 

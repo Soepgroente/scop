@@ -4,6 +4,7 @@
 #include "VulkanObject.hpp"
 #include "VulkanRenderer.hpp"
 #include "VulkanRenderSystem.hpp"
+#include "VulkanUtils.hpp"
 #include "VulkanWindow.hpp"
 
 #define GLM_FORCE_RADIANS
@@ -17,6 +18,14 @@
 #include <vector>
 
 namespace ve {
+
+struct ImageInfo
+{
+	const unsigned char*	imageData;
+	int		width;
+	int		height;
+	int		channels;
+};
 
 class Scop
 {
@@ -44,6 +53,7 @@ class Scop
 
 	std::string					objModelPath;
 	std::vector<VulkanObject>	objects;
+	std::vector<ImageInfo>		textures;
 	bool						rotateModel;
 
 };
@@ -52,5 +62,6 @@ std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath);
 
 glm::vec3	generateRandomColor();
 glm::vec3	generateRandomGreyscale();
+ImageInfo	loadImage(const std::string& imagePath);
 
 }

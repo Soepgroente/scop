@@ -1,12 +1,13 @@
 NAME			:=	scop
 CC				:=	c++
-BASE_CPPFLAGS	:=	-Wall -Wextra -Werror -std=c++20 -fPIC -g
+BASE_CPPFLAGS	:=	-Wall -Wextra -Werror -std=c++20 -fPIC
 RELEASE_FLAGS	:=	-DNDEBUG -flto -O3 -march=native
 DEBUG_FLAGS		:=	-g -fsanitize=address
 
 INCLUDES	:=	-I./src \
 				-isystem /home/vvan-der/.capt/root/usr/include \
 				-I/opt/homebrew/include \
+				-I./src/include \
 				-I./src/ObjectClasses \
 				-I./src/VulkanObjectClasses \
 				-I./src/VectorClasses \
