@@ -38,9 +38,9 @@ UNAME_S	:=	$(shell uname -s)
 SHADERS_SRC	:=	src/shaders/shadyBusiness.vert \
 				src/shaders/shadyBusiness.frag \
 
-GLSLC		:=	$(shell which glslangValidator) -V
-# GLSLC				:= $(shell which glslc)
-#source /opt/vulkan/1.4.328.1/setup-env.sh
+# GLSLC		:=	$(shell which glslangValidator) -V
+GLSLC				:= $(shell which glslc)
+# source /opt/vulkan/latest/setup-env.sh
 SHADERS_COMPILED	:= $(SHADERS_SRC:%=%.spv)
 
 LIBS		=	-L/opt/homebrew/lib -lglfw -framework Cocoa -framework IOKit -framework OpenGL

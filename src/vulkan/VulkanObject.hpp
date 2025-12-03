@@ -24,9 +24,9 @@ struct Material
 
 struct ObjComponent
 {
-	std::vector<uint32_t>	faceIndices;
-	std::vector<uint32_t>	textureIndices;
-	std::vector<uint32_t>	normalIndices;
+	std::vector<std::vector<uint32_t>>	faceIndices;
+	std::vector<std::vector<uint32_t>>	textureIndices;
+	std::vector<std::vector<uint32_t>>	normalIndices;
 	std::string				matName;
 };
 
@@ -47,7 +47,8 @@ struct TransformComponent
 	glm::vec3	scale{1.0f, 1.0f, 1.0f};
 	glm::vec3	rotation{};
 
-	glm::mat4	mat4();
+	glm::mat4	mat4() const noexcept;
+	glm::mat4	mat4(const glm::vec3& rotationCenter) const noexcept;
 };
 
 class VulkanObject

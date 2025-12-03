@@ -83,12 +83,12 @@ void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vecto
 
 		if (rotateModel == true)
 		{
-			object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.01f, glm::two_pi<float>());
+			object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.015f, glm::two_pi<float>());
 			// object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
 			// object.transform.rotation.z = glm::mod(object.transform.rotation.z + 0.002f, glm::two_pi<float>());
 		}
 		push.color = object.color;
-		push.transform = projectionView * object.transform.mat4();
+		push.transform = projectionView * object.transform.mat4(object.model->getVertexCenter());
 
 		vkCmdPushConstants(
 			commandBuffer,
@@ -103,4 +103,4 @@ void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vecto
 	}
 }
 
-}
+} // namespace ve

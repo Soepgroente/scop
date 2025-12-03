@@ -1,12 +1,15 @@
 #include "VulkanObject.hpp"
 
+#include <fstream>
+#include <functional>
 #include <iostream>
 #include <map>
-#include <functional>
+#include <ranges>
 #include <sstream>
-#include <fstream>
 
 namespace ve {
+
+static void	checkIndexBoundaries(const std::vector<ObjInfo>& objs);
 
 static float getNextFloat(std::istringstream& stream)
 {
@@ -99,13 +102,17 @@ static void	addFace(ObjInfo& obj, std::istringstream& faceData)
 	std::string	vertex;
 	ObjComponent&	objComp = obj.components.back();
 
+	objComp.faceIndices.push_back(std::vector<uint32_t>{});
+	objComp.textureIndices.push_back(std::vector<uint32_t>{});
+	objComp.normalIndices.push_back(std::vector<uint32_t>{});
+
 	while (faceData.eof() == false)
 	{
 		faceData >> vertex;
 		size_t		firstSlash = vertex.find('/');
 		uint32_t 	tex = 0, norm = 0;
 
-		objComp.faceIndices.push_back(static_cast<uint32_t>
+		objComp.faceIndices.back().push_back(static_cast<uint32_t>
 			(std::stoi(vertex.substr(0, firstSlash))) - 1);
 		if (firstSlash != std::string::npos)
 		{
@@ -114,12 +121,12 @@ static void	addFace(ObjInfo& obj, std::istringstream& faceData)
 			if (secondSlash > firstSlash + 1)
 			{
 				tex = static_cast<uint32_t> (std::stoi(vertex.substr(firstSlash + 1, secondSlash - firstSlash - 1))) - 1;
-				objComp.textureIndices.push_back(tex);
+				objComp.textureIndices.back().push_back(tex);
 			}
 			if (secondSlash != std::string::npos)
 			{
 				norm = static_cast<uint32_t> (std::stoi(vertex.substr(secondSlash + 1))) - 1;
-				objComp.normalIndices.push_back(norm);
+				objComp.normalIndices.back().push_back(norm);
 			}
 		}
 	}
@@ -385,22 +392,43 @@ std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath)
 		}
 	}
 	objs.emplace_back(std::move(currentObj));
-	for (ObjInfo& obj : objs)
+	try
 	{
-		for (ObjComponent& component : obj.components)
-		{
-			if ((component.faceIndices.empty() != true && *std::max_element(component.faceIndices.begin(), component.faceIndices.end()) >= obj.vertices.size()) ||
-				(component.textureIndices.empty() != true && *std::max_element(component.textureIndices.begin(), component.textureIndices.end()) >= obj.textureCoords.size()) ||
-				(component.normalIndices.empty() != true && *std::max_element(component.normalIndices.begin(), component.normalIndices.end()) >= obj.normals.size()))
-			{
-				std::cerr << "Error: index out of bounds " << obj.name << std::endl;
-				file.close();
-				std::exit(EXIT_FAILURE);
-			}
-		}
+		checkIndexBoundaries(objs);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		std::cerr << "Error parsing OBJ file: " << objFilePath << std::endl;
+		file.close();
+		std::exit(EXIT_FAILURE);
 	}
 	file.close();
 	return objs;
+}
+
+static void	checkIndex(const std::vector<uint32_t>& indices, size_t maxValue, const std::string& indexType)
+{
+	for (uint32_t index : indices)
+	{
+		if (index >= maxValue)
+		{
+			throw std::runtime_error(indexType + " index out of bounds");
+		}
+	}
+}
+
+static void	checkIndexBoundaries(const std::vector<ObjInfo>& objs)
+{
+	for (const ObjInfo& obj : objs)
+	{
+		for (const ObjComponent& component : obj.components)
+		{
+			for (const std::vector<uint32_t>& faceIndices : component.faceIndices)			{ checkIndex(faceIndices, obj.vertices.size(), "Vertex"); }
+			for (const std::vector<uint32_t>& textureIndices : component.textureIndices)	{ checkIndex(textureIndices, obj.textureCoords.size(), "Texture coordinate"); }
+			for (const std::vector<uint32_t>& normalIndices : component.normalIndices)		{ checkIndex(normalIndices, obj.normals.size(), "Normal"); }
+		}
+	}
 }
 
 std::ostream&	operator<<(std::ostream& os, const ObjInfo& obj)

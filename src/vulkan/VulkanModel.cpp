@@ -150,12 +150,54 @@ std::vector<VkVertexInputAttributeDescription>	VulkanModel::Vertex::getAttribute
 	return attributeDescriptions;
 }
 
+glm::vec3	VulkanModel::calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept
+{
+	float	xMin, xMax,
+			yMin, yMax,
+			zMin, zMax;
+
+	xMin = std::min_element(vertices.begin(), vertices.end(),
+		[](const Vertex& a, const Vertex& b) { return a.pos.x < b.pos.x; })->pos.x;
+	xMax = std::max_element(vertices.begin(), vertices.end(),
+		[](const Vertex& a, const Vertex& b) { return a.pos.x < b.pos.x; })->pos.x;
+	yMin = std::min_element(vertices.begin(), vertices.end(),
+		[](const Vertex& a, const Vertex& b) { return a.pos.y < b.pos.y; })->pos.y;
+	yMax = std::max_element(vertices.begin(), vertices.end(),
+		[](const Vertex& a, const Vertex& b) { return a.pos.y < b.pos.y; })->pos.y;
+	zMin = std::min_element(vertices.begin(), vertices.end(),
+		[](const Vertex& a, const Vertex& b) { return a.pos.z < b.pos.z; })->pos.z;
+	zMax = std::max_element(vertices.begin(), vertices.end(),
+		[](const Vertex& a, const Vertex& b) { return a.pos.z < b.pos.z; })->pos.z;
+
+	return glm::vec3 {
+		(xMin + xMax) / 2.0f,
+		(yMin + yMax) / 2.0f,
+		(zMin + zMax) / 2.0f
+	};
+}
+
+glm::vec3	VulkanModel::calculateVertexCenter(const std::vector<Vertex>& vertices) noexcept
+{
+	glm::vec3	center{};
+
+	for (const Vertex& vertex : vertices)
+	{
+		center += vertex.pos;
+	}
+	center /= static_cast<float>(vertices.size());
+	return center;
+}
+
 std::unique_ptr<VulkanModel>	VulkanModel::createModelFromFile(VulkanDevice& device, const std::string& filepath)
 {
 	Builder	builder{};
-
 	builder.loadModel(filepath);
-	return std::make_unique<VulkanModel>(device, builder);
+
+	std::unique_ptr<VulkanModel>	model = std::make_unique<VulkanModel>(device, builder);
+
+	model->vertexCenter = model->calculateVertexCenter(builder.vertices);
+	model->boundingCenter = model->calculateBoundingCenter(builder.vertices);
+	return model;
 }
 
 void	VulkanModel::Builder::loadModel(const std::string &filepath)
@@ -171,39 +213,47 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 	{
 		for (const ObjComponent& component : obj.components)
 		{
-			size_t faces = component.faceIndices.size();
-
-			for (size_t i = 0; i < faces; i++)
+			for (size_t i = 0; i < component.faceIndices.size(); i++)
 			{
-				Vertex	vertex{};
+				const std::vector<uint32_t>& face = component.faceIndices[i];
+				const std::vector<uint32_t>& tex = component.textureIndices[i];
+				const std::vector<uint32_t>& norm = component.normalIndices[i];
 
-				vertex.pos = obj.vertices[component.faceIndices[i]];
-				// vertex.color = generateRandomColor();
-				if (obj.materials.find(component.matName) != obj.materials.end())
+				if (face.size() < 3)
 				{
-					vertex.color = obj.materials.at(component.matName).diffuseClr;
+					continue;
 				}
-				else
+
+				/*	If more than 3 faces, create triangles	*/
+
+				for (size_t j = 2; j < face.size(); j++)
 				{
-					vertex.color = generateRandomColor();
+					for (size_t ti : {0UL, j - 1, j})
+					{
+						Vertex	vertex{};
+
+						vertex.pos = obj.vertices[face[ti]];
+						if (tex.size() > ti)
+						{
+							vertex.textureUv = obj.textureCoords[tex[ti]];
+						}
+						if (norm.size() > ti)
+						{
+							vertex.normal = obj.normals[norm[ti]];
+						}
+						vertex.color = generateRandomGreyscale();
+						if (uniqueVertices.count(vertex) == 0)
+						{
+							uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+							vertices.push_back(vertex);
+						}
+						indices.push_back(uniqueVertices[vertex]);
+					}
 				}
-				if (obj.textureCoords.size() > i)
-				{
-					vertex.textureUv = obj.textureCoords[component.textureIndices[i]];
-				}
-				if (obj.normals.size() > i)
-				{
-					vertex.normal = obj.normals[component.normalIndices[i]];
-				}
-				if (uniqueVertices.count(vertex) == 0)
-				{
-					uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-					vertices.push_back(vertex);
-				}
-				indices.push_back(uniqueVertices[vertex]);
 			}
 		}
 	}
+
 }
 
 }	// namespace ve

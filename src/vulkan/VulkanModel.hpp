@@ -60,9 +60,10 @@ class VulkanModel
 
 	void	bind(VkCommandBuffer commandBuffer);
 	void	draw(VkCommandBuffer commandBuffer);
-
 	void	setName(const std::string& name) { this->name = name; }
 
+	glm::vec3	getVertexCenter() const noexcept { return vertexCenter; }
+	glm::vec3	getBoundingCenter() const noexcept { return boundingCenter; }
 	static std::unique_ptr<VulkanModel>	createModelFromFile(VulkanDevice& device, const std::string& filepath);
 
 	private:
@@ -78,9 +79,15 @@ class VulkanModel
 	VkBuffer			indexBuffer;
 	VkDeviceMemory		indexBufferMemory;
 	uint32_t			indexCount;
-	
+
+	glm::vec3			vertexCenter;
+	glm::vec3			boundingCenter;
+
 	void	createVertexBuffers(const std::vector<Vertex>& vertices);
 	void	createIndexBuffers(const std::vector<uint32_t>& indices);
+
+	static glm::vec3	calculateVertexCenter(const std::vector<Vertex>& vertices) noexcept;
+	static glm::vec3	calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept;
 };
 
 }

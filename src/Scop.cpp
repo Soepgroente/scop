@@ -38,27 +38,26 @@ void	Scop::run()
 	float	elapsedTime = 0.0f;
 	float	aspectRatio = 1.0f;
 	VkCommandBuffer	commandBuffer = nullptr;
-
 	VulkanObject	viewerObject = VulkanObject::createVulkanObject();
 	KeyboardInput	keyboardInput{};
 	MouseInput		mouseInput{};
+	size_t			frameCount = 0;
+	size_t			lastPressed = 0;
 
 	currentTime = std::chrono::high_resolution_clock::now();
 	rotateModel = false;
-	int frameCount = 0;
-
 	viewerObject.transform.translation = {0.0f, 0.0f, -10.0f};
 	while (vulkanWindow.shouldClose() == false)
 	{
-		frameCount = (frameCount + 1) % 1000;
 		glfwPollEvents();
 		newTime = std::chrono::high_resolution_clock::now();
 		elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 		currentTime = newTime;
 
-		if (glfwGetKey(vulkanWindow.getGLFWwindow(), GLFW_KEY_KP_ADD) == GLFW_PRESS)
+		if (frameCount - lastPressed > 20 && glfwGetKey(vulkanWindow.getGLFWwindow(), GLFW_KEY_KP_ADD) == GLFW_PRESS)
 		{
 			rotateModel = !rotateModel;
+			lastPressed = frameCount;
 		}
 		keyboardInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
 		mouseInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
@@ -77,6 +76,7 @@ void	Scop::run()
 			vulkanRenderer.endSwapChainRenderPass(commandBuffer);
 			vulkanRenderer.endFrame();
 		}
+		frameCount++;
 	}
 	vkDeviceWaitIdle(vulkanDevice.device());
 }
@@ -86,7 +86,7 @@ void	Scop::loadObjects()
 	std::shared_ptr<VulkanModel>	model = VulkanModel::createModelFromFile(vulkanDevice, objModelPath);
 	VulkanObject					object = VulkanObject::createVulkanObject();
 
-	object.model = model;
+	object.model = std::move(model);
 	object.color = {1.0f, 0.4f, 0.2f};
 	objects.push_back(std::move(object));
 }
