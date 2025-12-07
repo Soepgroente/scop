@@ -4,6 +4,7 @@
 #include "VulkanObject.hpp"
 #include "VulkanRenderer.hpp"
 #include "VulkanRenderSystem.hpp"
+#include "VulkanTexture.hpp"
 #include "VulkanUtils.hpp"
 #include "VulkanWindow.hpp"
 
@@ -53,9 +54,8 @@ class Scop
 
 	std::string					objModelPath;
 	std::vector<VulkanObject>	objects;
-	std::vector<ImageInfo>		textures;
+	std::vector<VulkanTexture>	textures;
 	bool						rotateModel;
-
 };
 
 std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath);

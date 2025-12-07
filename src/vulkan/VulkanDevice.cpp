@@ -450,7 +450,7 @@ uint32_t	VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags
 	throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void VulkanDevice::createBuffer(
+void	VulkanDevice::createBuffer(
 	VkDeviceSize size,
 	VkBufferUsageFlags usage,
 	VkMemoryPropertyFlags properties,

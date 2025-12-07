@@ -91,9 +91,9 @@ void	Scop::loadObjects()
 	objects.push_back(std::move(object));
 	for (size_t i = 0; i < 5; i++)
 	{
-		ImageInfo	texture = loadImage("textures/derp" + std::to_string(i + 1) + ".jpeg");
-		textures.push_back(texture);
-		std::cout << "Loaded texture " << i + 1 << " with size " << texture.width << "x" << texture.height << std::endl;
+		VulkanTexture	texture("textures/derp" + std::to_string(i + 1) + ".jpeg");
+
+		textures.emplace_back(std::move(texture));
 	}
 }
 
