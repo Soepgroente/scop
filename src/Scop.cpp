@@ -91,7 +91,7 @@ void	Scop::loadObjects()
 	objects.push_back(std::move(object));
 	for (size_t i = 0; i < 5; i++)
 	{
-		VulkanTexture	texture("textures/derp" + std::to_string(i + 1) + ".jpeg");
+		VulkanTexture	texture("textures/derp" + std::to_string(i + 1) + ".jpeg", vulkanDevice);
 
 		textures.emplace_back(std::move(texture));
 	}

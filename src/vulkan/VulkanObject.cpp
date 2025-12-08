@@ -82,4 +82,12 @@ VulkanObject::~VulkanObject()
 {
 }
 
+ImageInfo	loadImage(const std::string& imagePath)
+{
+	ImageInfo	imageInfo = {};
+
+	imageInfo.imageData = stbi_load(imagePath.c_str(), &imageInfo.width, &imageInfo.height, &imageInfo.channels, STBI_rgb_alpha);
+	return imageInfo;
+}
+
 } // namespace ve

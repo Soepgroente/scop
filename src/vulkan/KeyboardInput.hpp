@@ -31,7 +31,7 @@ class KeyboardInput
 	KeyMappings	keys{};
 
 	float	movementSpeed{3.0f};
-	float	lookSpeed{0.8f};
+	float	lookSpeed{1.0f};
 };
 
 } // namespace ve

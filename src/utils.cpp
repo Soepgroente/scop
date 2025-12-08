@@ -26,12 +26,4 @@ glm::vec3	generateRandomGreyscale()
 	return glm::vec3(grey, grey, grey);
 }
 
-ImageInfo	loadImage(const std::string& imagePath)
-{
-	ImageInfo	imageInfo = {};
-
-	imageInfo.imageData = stbi_load(imagePath.c_str(), &imageInfo.width, &imageInfo.height, &imageInfo.channels, STBI_rgb_alpha);
-	return imageInfo;
-}
-
 } // namespace ve

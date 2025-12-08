@@ -20,14 +20,6 @@
 
 namespace ve {
 
-struct ImageInfo
-{
-	const unsigned char*	imageData;
-	int		width;
-	int		height;
-	int		channels;
-};
-
 class Scop
 {
 	public:

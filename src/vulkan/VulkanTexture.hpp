@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scop.hpp"
+#include "VulkanObject.hpp"
 
 namespace ve {
 
@@ -9,11 +9,11 @@ class VulkanTexture
 	public:
 
 	VulkanTexture() = delete;
-	VulkanTexture(const std::string& filePath);
+	VulkanTexture(const std::string& filePath, VulkanDevice& device);
 	~VulkanTexture() = default;
 
-	VulkanTexture(const VulkanTexture& other) = delete;
-	VulkanTexture&	operator=(const VulkanTexture& other) = delete;
+	VulkanTexture(const VulkanTexture& other);
+	VulkanTexture&	operator=(const VulkanTexture& other);
 
 	const ImageInfo&	getImageInfo() const noexcept { return imageInfo; }
 
@@ -21,7 +21,7 @@ class VulkanTexture
 
 	ImageInfo		imageInfo;
 	VkDeviceSize	imageSize;
-	VulkanDevice*	device;
+	VulkanDevice&	device_;
 };
 
 } // namespace ve

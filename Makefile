@@ -27,8 +27,17 @@ SRCS	:=	main.cpp \
 			vulkan/VulkanRenderer.cpp \
 			vulkan/VulkanRenderSystem.cpp \
 			vulkan/VulkanSwapChain.cpp \
+			vulkan/VulkanTexture.cpp \
 			vulkan/VulkanWindow.cpp \
 			utils.cpp \
+
+ifeq ($(shell uname), Darwin)
+	CPUCORES := $(shell sysctl -n hw.ncpu)
+else
+	CPUCORES := $(shell nproc)
+endif
+MAKEFLAGS	+= -j$(CPUCORES)
+export MAKEFLAGS
 
 SRCDIR	:=	src
 OBJDIR	:=	$(SRCDIR)/obj
@@ -39,9 +48,8 @@ UNAME_S	:=	$(shell uname -s)
 SHADERS_SRC	:=	src/shaders/shadyBusiness.vert \
 				src/shaders/shadyBusiness.frag \
 
-# GLSLC		:=	$(shell which glslangValidator) -V
 GLSLC				:= $(shell which glslc)
-# source /opt/vulkan/latest/setup-env.sh
+# source /opt/vulkan/current/setup-env.sh
 SHADERS_COMPILED	:= $(SHADERS_SRC:%=%.spv)
 
 LIBS		=	-L/opt/homebrew/lib -lglfw -framework Cocoa -framework IOKit -framework OpenGL

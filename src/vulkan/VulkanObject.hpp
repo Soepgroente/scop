@@ -9,6 +9,14 @@
 
 namespace ve {
 
+struct ImageInfo
+{
+	const unsigned char*	imageData;
+	int		width;
+	int		height;
+	int		channels;
+};
+
 struct Material
 {
 	std::string	name;
@@ -81,5 +89,6 @@ class VulkanObject
 };
 
 std::ostream&	operator<<(std::ostream& os, const ObjInfo& obj);
+ImageInfo		loadImage(const std::string& imagePath);
 
 } // namespace ve
