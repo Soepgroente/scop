@@ -4,6 +4,12 @@ namespace ve {
 
 VulkanTexture::VulkanTexture(const std::string& filePath, VulkanDevice& device) : device(device)
 {
+	textureImage = VK_NULL_HANDLE;
+	stagingBuffer = VK_NULL_HANDLE;
+	stagingBufferMemory = VK_NULL_HANDLE;
+	textureImageView = VK_NULL_HANDLE;
+	textureSampler = VK_NULL_HANDLE;
+
 	imageInfo = loadImage(filePath);
 	if (imageInfo.imageData == nullptr)
 	{
@@ -117,10 +123,10 @@ void	VulkanTexture::createTextureImage()
 		1
 	);
 
-	vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
-	vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
-	stagingBuffer = VK_NULL_HANDLE;
-	stagingBufferMemory = VK_NULL_HANDLE;
+	// vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
+	// vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
+	// stagingBuffer = VK_NULL_HANDLE;
+	// stagingBufferMemory = VK_NULL_HANDLE;
 }
 
 void	VulkanTexture::createTextureImageView()

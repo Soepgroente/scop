@@ -1,6 +1,6 @@
 NAME			:=	scop
 CC				:=	c++
-BASE_CPPFLAGS	:=	-Wall -Wextra -Werror -std=c++20 -fPIC
+BASE_CPPFLAGS	:=	-Wall -Wextra -Werror -std=c++20 -fPIC -g
 RELEASE_FLAGS	:=	-DNDEBUG -flto -O3 -march=native
 DEBUG_FLAGS		:=	-g -fsanitize=address
 

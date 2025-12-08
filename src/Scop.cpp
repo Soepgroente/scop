@@ -97,4 +97,4 @@ void	Scop::loadObjects()
 	}
 }
 
-} // namespace ve
+}	// namespace ve
