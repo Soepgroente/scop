@@ -10,10 +10,14 @@ class VulkanTexture
 
 	VulkanTexture() = delete;
 	VulkanTexture(const std::string& filePath, VulkanDevice& device);
-	~VulkanTexture() = default;
+	~VulkanTexture();
 
 	VulkanTexture(const VulkanTexture& other);
 	VulkanTexture&	operator=(const VulkanTexture& other);
+
+	void	createTextureImage();
+	void	createTextureImageView();
+	void	createTextureSampler();
 
 	const ImageInfo&	getImageInfo() const noexcept { return imageInfo; }
 
@@ -21,7 +25,16 @@ class VulkanTexture
 
 	ImageInfo		imageInfo;
 	VkDeviceSize	imageSize;
-	VulkanDevice&	device_;
+	VkImage			textureImage;
+	VkBuffer		stagingBuffer;
+	VkDeviceMemory	stagingBufferMemory;
+	
+	VkImageView		textureImageView;
+	VkSampler		textureSampler;
+
+	VkImageCreateInfo	info{};
+
+	VulkanDevice&	device;
 };
 
 } // namespace ve

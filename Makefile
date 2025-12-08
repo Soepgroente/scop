@@ -31,13 +31,13 @@ SRCS	:=	main.cpp \
 			vulkan/VulkanWindow.cpp \
 			utils.cpp \
 
-ifeq ($(shell uname), Darwin)
-	CPUCORES := $(shell sysctl -n hw.ncpu)
-else
-	CPUCORES := $(shell nproc)
-endif
-MAKEFLAGS	+= -j$(CPUCORES)
-export MAKEFLAGS
+# ifeq ($(shell uname), Darwin)
+# 	CPUCORES := $(shell sysctl -n hw.ncpu)
+# else
+# 	CPUCORES := $(shell nproc)
+# endif
+# MAKEFLAGS	+= -j$(CPUCORES)
+# export MAKEFLAGS
 
 SRCDIR	:=	src
 OBJDIR	:=	$(SRCDIR)/obj

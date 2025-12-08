@@ -217,20 +217,12 @@ void	VulkanSwapChain::createImageViews()
 	swapChainImageViews.resize(size);
 	for (size_t i = 0; i < size; i++)
 	{
-		VkImageViewCreateInfo viewInfo{};
-
-		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		viewInfo.image = swapChainImages[i];
-		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		viewInfo.format = swapChainImageFormat;
-		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		viewInfo.subresourceRange.levelCount = 1;
-		viewInfo.subresourceRange.layerCount = 1;
-
-		if (vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to create texture image view!");
-		}
+		swapChainImageViews[i] = device.createImageView(
+			swapChainImages[i],
+			swapChainImageFormat,
+			VK_IMAGE_ASPECT_COLOR_BIT,
+			1
+		);
 	}
 }
 

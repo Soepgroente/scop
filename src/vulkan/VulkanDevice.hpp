@@ -77,11 +77,26 @@ class VulkanDevice
 		uint32_t layerCount
 	);
 
-	void createImageWithInfo(
+	void	createImageWithInfo(
 		const VkImageCreateInfo &imageInfo,
 		VkMemoryPropertyFlags properties,
 		VkImage &image,
 		VkDeviceMemory &imageMemory
+	);
+
+	void	transitionImageLayout(
+		VkImage image,
+		VkFormat format,
+		VkImageLayout oldLayout,
+		VkImageLayout newLayout,
+		uint32_t layerCount
+	);
+
+	VkImageView	createImageView(
+		VkImage image,
+		VkFormat format,
+		VkImageAspectFlags aspectFlags,
+		uint32_t layerCount
 	);
 
 	VkPhysicalDeviceProperties	properties;
