@@ -65,8 +65,14 @@ VulkanDevice::VulkanDevice(VulkanWindow &window) : window{window}
 
 VulkanDevice::~VulkanDevice()
 {
-	vkDestroyCommandPool(device_, commandPool, nullptr);
-	vkDestroyDevice(device_, nullptr);
+	if (commandPool != VK_NULL_HANDLE)
+	{
+		vkDestroyCommandPool(device_, commandPool, nullptr);
+	}
+	if (device_ != VK_NULL_HANDLE)
+	{
+		vkDestroyDevice(device_, nullptr);
+	}
 
 	if (enableValidationLayers == true)
 	{
@@ -510,6 +516,7 @@ void	VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer)
 	vkEndCommandBuffer(commandBuffer);
 
 	VkSubmitInfo submitInfo{};
+
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &commandBuffer;
@@ -609,6 +616,8 @@ void	VulkanDevice::transitionImageLayout(
 	barrier.subresourceRange.levelCount = 1;
 	barrier.subresourceRange.baseArrayLayer = 0;
 	barrier.subresourceRange.layerCount = layerCount;
+	barrier.srcAccessMask = 0;
+	barrier.dstAccessMask = 0;
 
 	VkPipelineStageFlags sourceStage;
 	VkPipelineStageFlags destinationStage;
@@ -617,7 +626,6 @@ void	VulkanDevice::transitionImageLayout(
 	{
 		barrier.srcAccessMask = 0;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	}
@@ -625,7 +633,6 @@ void	VulkanDevice::transitionImageLayout(
 	{
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
 		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	}

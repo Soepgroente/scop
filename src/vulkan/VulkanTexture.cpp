@@ -5,8 +5,6 @@ namespace ve {
 VulkanTexture::VulkanTexture(const std::string& filePath, VulkanDevice& device) : device(device)
 {
 	textureImage = VK_NULL_HANDLE;
-	stagingBuffer = VK_NULL_HANDLE;
-	stagingBufferMemory = VK_NULL_HANDLE;
 	textureImageView = VK_NULL_HANDLE;
 	textureSampler = VK_NULL_HANDLE;
 
@@ -21,15 +19,6 @@ VulkanTexture::VulkanTexture(const std::string& filePath, VulkanDevice& device) 
 
 VulkanTexture::~VulkanTexture()
 {
-	if (stagingBuffer != VK_NULL_HANDLE)
-	{
-		vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
-	}
-	if (stagingBufferMemory != VK_NULL_HANDLE)
-	{
-		vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
-	}
-	free(const_cast<unsigned char*>(imageInfo.imageData));
 	if (textureImageView != VK_NULL_HANDLE)
 	{
 		vkDestroyImageView(device.device(), textureImageView, nullptr);
@@ -44,24 +33,48 @@ VulkanTexture::~VulkanTexture()
 	}
 }
 
-VulkanTexture::VulkanTexture(const VulkanTexture& other) : device(other.device)
+VulkanTexture::VulkanTexture(VulkanTexture&& other) :
+	imageInfo(other.imageInfo),
+	imageSize(other.imageSize),
+	textureImage(other.textureImage),
+	textureImageView(other.textureImageView),
+	textureSampler(other.textureSampler),
+	info(other.info),
+	device(other.device)
 {
-	imageInfo = other.imageInfo;
-	imageSize = other.imageSize;
+	other.imageInfo = {};
+	other.imageSize = 0;
+	other.textureImage = VK_NULL_HANDLE;
+	other.textureImageView = VK_NULL_HANDLE;
+	other.textureSampler = VK_NULL_HANDLE;
 }
 
-VulkanTexture&	VulkanTexture::operator=(const VulkanTexture& other)
+VulkanTexture&	VulkanTexture::operator=(VulkanTexture&& other)
 {
 	if (this != &other)
 	{
+		this->~VulkanTexture();
 		imageInfo = other.imageInfo;
 		imageSize = other.imageSize;
+		textureImage = other.textureImage;
+		textureImageView = other.textureImageView;
+		textureSampler = other.textureSampler;
+		info = other.info;
+
+		other.imageInfo = {};
+		other.imageSize = 0;
+		other.textureImage = VK_NULL_HANDLE;
+		other.textureImageView = VK_NULL_HANDLE;
+		other.textureSampler = VK_NULL_HANDLE;
 	}
 	return *this;
 }
 
 void	VulkanTexture::createTextureImage()
 {
+	VkBuffer		stagingBuffer;
+	VkDeviceMemory	stagingBufferMemory;
+
 	device.createBuffer(
 		imageSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -75,8 +88,10 @@ void	VulkanTexture::createTextureImage()
 	vkMapMemory(device.device(), stagingBufferMemory, 0, imageSize, 0, &data);
 	memcpy(data, imageInfo.imageData, static_cast<size_t>(imageSize));
 	vkUnmapMemory(device.device(), stagingBufferMemory);
-	free(const_cast<unsigned char*>(imageInfo.imageData));
+	stbi_image_free((const_cast<unsigned char*>(imageInfo.imageData)));
 	imageInfo.imageData = nullptr;
+
+	VkImageCreateInfo	info{};
 
 	info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	info.imageType = VK_IMAGE_TYPE_2D;
@@ -123,10 +138,10 @@ void	VulkanTexture::createTextureImage()
 		1
 	);
 
-	// vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
-	// vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
-	// stagingBuffer = VK_NULL_HANDLE;
-	// stagingBufferMemory = VK_NULL_HANDLE;
+	vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
+	vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
+	stagingBuffer = VK_NULL_HANDLE;
+	stagingBufferMemory = VK_NULL_HANDLE;
 }
 
 void	VulkanTexture::createTextureImageView()

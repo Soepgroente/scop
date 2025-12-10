@@ -12,8 +12,11 @@ class VulkanTexture
 	VulkanTexture(const std::string& filePath, VulkanDevice& device);
 	~VulkanTexture();
 
-	VulkanTexture(const VulkanTexture& other);
-	VulkanTexture&	operator=(const VulkanTexture& other);
+	VulkanTexture(const VulkanTexture& other) = delete;
+	VulkanTexture&	operator=(const VulkanTexture& other) = delete;
+
+	VulkanTexture(VulkanTexture&&);
+	VulkanTexture&	operator=(VulkanTexture&&);
 
 	void	createTextureImage();
 	void	createTextureImageView();
@@ -26,8 +29,7 @@ class VulkanTexture
 	ImageInfo		imageInfo;
 	VkDeviceSize	imageSize;
 	VkImage			textureImage;
-	VkBuffer		stagingBuffer;
-	VkDeviceMemory	stagingBufferMemory;
+	// VkDeviceMemory	textureImageMemory;
 	
 	VkImageView		textureImageView;
 	VkSampler		textureSampler;
