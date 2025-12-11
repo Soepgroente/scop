@@ -31,6 +31,10 @@ VulkanTexture::~VulkanTexture()
 	{
 		vkDestroyImage(device.device(), textureImage, nullptr);
 	}
+	if (textureImageMemory != VK_NULL_HANDLE)
+	{
+		vkFreeMemory(device.device(), textureImageMemory, nullptr);
+	}
 }
 
 VulkanTexture::VulkanTexture(VulkanTexture&& other) :
@@ -53,7 +57,6 @@ VulkanTexture&	VulkanTexture::operator=(VulkanTexture&& other)
 {
 	if (this != &other)
 	{
-		this->~VulkanTexture();
 		imageInfo = other.imageInfo;
 		imageSize = other.imageSize;
 		textureImage = other.textureImage;
