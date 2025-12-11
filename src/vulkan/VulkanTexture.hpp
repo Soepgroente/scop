@@ -29,7 +29,7 @@ class VulkanTexture
 	ImageInfo		imageInfo;
 	VkDeviceSize	imageSize;
 	VkImage			textureImage;
-	// VkDeviceMemory	textureImageMemory;
+	VkDeviceMemory	textureImageMemory;
 	
 	VkImageView		textureImageView;
 	VkSampler		textureSampler;

@@ -112,7 +112,7 @@ void	VulkanTexture::createTextureImage()
 		info,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		textureImage,
-		stagingBufferMemory
+		textureImageMemory
 	);
 
 	device.transitionImageLayout(
@@ -140,8 +140,6 @@ void	VulkanTexture::createTextureImage()
 
 	vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
 	vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
-	stagingBuffer = VK_NULL_HANDLE;
-	stagingBufferMemory = VK_NULL_HANDLE;
 }
 
 void	VulkanTexture::createTextureImageView()
