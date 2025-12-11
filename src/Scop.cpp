@@ -91,8 +91,8 @@ void	Scop::loadObjects()
 	object.model = std::move(model);
 	object.color = {1.0f, 0.4f, 0.2f};
 	objects.push_back(std::move(object));
-	textures.reserve(5);
-	for (size_t i = 0; i < 5; i++)
+	textures.reserve(1);
+	for (size_t i = 0; i < 1; i++)
 	{
 		VulkanTexture	texture("textures/derp" + std::to_string(i + 1) + ".jpeg", vulkanDevice);
 

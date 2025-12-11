@@ -15,6 +15,8 @@ VulkanTexture::VulkanTexture(const std::string& filePath, VulkanDevice& device) 
 	}
 	imageSize = static_cast<VkDeviceSize>(imageInfo.width) * imageInfo.height * 4;
 	createTextureImage();
+	createTextureImageView();
+	createTextureSampler();
 }
 
 VulkanTexture::~VulkanTexture()
@@ -175,6 +177,8 @@ void	VulkanTexture::createTextureSampler()
 	samplerInfo.mipLodBias = 0.0f;
 	samplerInfo.minLod = 0.0f;
 	samplerInfo.maxLod = 0.0f;
+
+	samplerInfo.maxAnisotropy = 1.0f;
 
 	if (vkCreateSampler(device.device(), &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
 	{

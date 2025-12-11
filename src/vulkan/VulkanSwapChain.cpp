@@ -214,7 +214,10 @@ void	VulkanSwapChain::createImageViews()
 {
 	size_t size = swapChainImages.size();
 
-	swapChainImageViews.resize(size);
+	if (swapChainImageViews.size() != size)
+	{
+		swapChainImageViews.resize(size);
+	}
 	for (size_t i = 0; i < size; i++)
 	{
 		swapChainImageViews[i] = device.createImageView(
