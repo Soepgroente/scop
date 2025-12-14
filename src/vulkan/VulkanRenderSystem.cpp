@@ -72,11 +72,11 @@ void	VulkanRenderSystem::createPipeline(VkRenderPass renderPass)
 	);
 }
 
-void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vector<VulkanObject>& objects, const Camera& camera, bool rotateModel)
+void	VulkanRenderSystem::renderObjects(FrameInfo& info, std::vector<VulkanObject>& objects, bool rotateModel)
 {
-	vulkanPipeline->bind(commandBuffer);
+	vulkanPipeline->bind(info.commandBuffer);
 
-	glm::mat4	projectionView = camera.getProjectionMatrix() * camera.getViewMatrix();
+	glm::mat4	projectionView = info.camera.getProjectionMatrix() * info.camera.getViewMatrix();
 	for (VulkanObject& object : objects)
 	{
 		SimplePushConstantData	push{};
@@ -91,15 +91,15 @@ void	VulkanRenderSystem::renderObjects(VkCommandBuffer commandBuffer, std::vecto
 		push.transform = projectionView * object.transform.mat4(object.model->getVertexCenter());
 
 		vkCmdPushConstants(
-			commandBuffer,
+			info.commandBuffer,
 			pipelineLayout,
 			VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 			0,
 			sizeof(SimplePushConstantData),
 			&push
 		);
-		object.model->bind(commandBuffer);
-		object.model->draw(commandBuffer);
+		object.model->bind(info.commandBuffer);
+		object.model->draw(info.commandBuffer);
 	}
 }
 

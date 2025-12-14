@@ -1,5 +1,6 @@
 #pragma once
 
+#include "VulkanBuffer.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanUtils.hpp"
 
@@ -72,12 +73,11 @@ class VulkanModel
 	bool				hasIndexBuffer = false;
 
 	VulkanDevice&		vulkanDevice;
-	VkBuffer			vertexBuffer;
-	VkDeviceMemory		vertexBufferMemory;
 	uint32_t			vertexCount;
-	
-	VkBuffer			indexBuffer;
-	VkDeviceMemory		indexBufferMemory;
+
+	std::unique_ptr<VulkanBuffer>	vertexBuffer;
+	std::unique_ptr<VulkanBuffer>	indexBuffer;
+
 	uint32_t			indexCount;
 
 	glm::vec3			vertexCenter;

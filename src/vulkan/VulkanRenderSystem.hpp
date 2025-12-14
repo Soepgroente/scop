@@ -2,6 +2,7 @@
 
 #include "Camera.hpp"
 #include "VulkanDevice.hpp"
+#include "VulkanFrameInfo.hpp"
 #include "VulkanModel.hpp"
 #include "VulkanObject.hpp"
 #include "VulkanPipeline.hpp"
@@ -24,7 +25,7 @@ class VulkanRenderSystem
 	VulkanRenderSystem(const VulkanRenderSystem&) = delete;
 	VulkanRenderSystem& operator=(const VulkanRenderSystem&) = delete;
 	
-	void	renderObjects(VkCommandBuffer commandBuffer, std::vector<VulkanObject>& objects, const Camera& camera, bool rotateModel);
+	void	renderObjects(FrameInfo& info, std::vector<VulkanObject>& objects, bool rotateModel);
 
 	private:
 

@@ -14,6 +14,22 @@ VulkanTexture::VulkanTexture(const std::string& filePath, VulkanDevice& device) 
 		throw std::runtime_error("failed to load texture image!");
 	}
 	imageSize = static_cast<VkDeviceSize>(imageInfo.width) * imageInfo.height * 4;
+
+	info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	info.imageType = VK_IMAGE_TYPE_2D;
+	info.extent.width = static_cast<uint32_t>(imageInfo.width);
+	info.extent.height = static_cast<uint32_t>(imageInfo.height);
+	info.extent.depth = 1;
+	info.mipLevels = 1;
+	info.arrayLayers = 1;
+	info.format = VK_FORMAT_R8G8B8A8_SRGB;
+	info.tiling = VK_IMAGE_TILING_OPTIMAL;
+	info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	info.samples = VK_SAMPLE_COUNT_1_BIT;
+	info.flags = 0;
+
 	createTextureImage();
 	createTextureImageView();
 	createTextureSampler();
@@ -95,23 +111,6 @@ void	VulkanTexture::createTextureImage()
 	vkUnmapMemory(device.device(), stagingBufferMemory);
 	stbi_image_free((const_cast<unsigned char*>(imageInfo.imageData)));
 	imageInfo.imageData = nullptr;
-
-	VkImageCreateInfo	info{};
-
-	info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	info.imageType = VK_IMAGE_TYPE_2D;
-	info.extent.width = static_cast<uint32_t>(imageInfo.width);
-	info.extent.height = static_cast<uint32_t>(imageInfo.height);
-	info.extent.depth = 1;
-	info.mipLevels = 1;
-	info.arrayLayers = 1;
-	info.format = VK_FORMAT_R8G8B8A8_SRGB;
-	info.tiling = VK_IMAGE_TILING_OPTIMAL;
-	info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-	info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	info.samples = VK_SAMPLE_COUNT_1_BIT;
-	info.flags = 0;
 
 	device.createImageWithInfo(
 		info,

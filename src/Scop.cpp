@@ -13,6 +13,12 @@
 
 namespace ve {
 
+struct GlobalUBO
+{
+	glm::mat4	projectionView{1.0f};
+	glm::vec3	lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
+};
+
 Scop::Scop(std::string objPath) : objModelPath(objPath)
 {
 	loadObjects();
@@ -25,12 +31,23 @@ Scop::Scop(std::string objPath) : objModelPath(objPath)
 
 Scop::~Scop()
 {
-	textures.clear();
-	objects.clear();
 }
 
 void	Scop::run()
 {
+	std::vector<std::unique_ptr<VulkanBuffer>>	uboBuffers(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+	for (size_t i = 0; i < uboBuffers.size(); i++)
+	{
+		uboBuffers[i] = std::make_unique<VulkanBuffer>(
+			vulkanDevice,
+			sizeof(GlobalUBO),
+			1,
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+		);
+		uboBuffers[i]->map();
+	}
+
 	VulkanRenderSystem	renderSystem{vulkanDevice, vulkanRenderer.getSwapChainRenderPass()};
 	Camera camera{};
 
@@ -70,8 +87,16 @@ void	Scop::run()
 		commandBuffer = vulkanRenderer.beginFrame();
 		if (commandBuffer != nullptr)
 		{
+			int frameIndex = vulkanRenderer.getCurrentFrameIndex();
+			FrameInfo	info{frameIndex, elapsedTime, camera, commandBuffer};
+			GlobalUBO	ubo{};
+
+			ubo.projectionView = camera.getProjectionMatrix() * camera.getViewMatrix();
+			uboBuffers[frameIndex]->writeToBuffer(&ubo);
+			uboBuffers[frameIndex]->flush();
+
 			vulkanRenderer.beginSwapChainRenderPass(commandBuffer);
-			renderSystem.renderObjects(commandBuffer, objects, camera, rotateModel);
+			renderSystem.renderObjects(info, objects, rotateModel);
 			newTime = std::chrono::high_resolution_clock::now();
 			std::cout << "\rFrames per second: " << static_cast<int> (1.0f / elapsedTime) << ", Frame time: ";
 			std::cout << std::chrono::duration<float, std::chrono::milliseconds::period>(newTime - currentTime).count() << "ms " << std::flush;		
