@@ -21,6 +21,10 @@ struct GlobalUBO
 
 Scop::Scop(std::string objPath) : objModelPath(objPath)
 {
+	globalDescriptorPool = VulkanDescriptorPool::Builder(vulkanDevice)
+		.setMaxSets(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VulkanSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.build();
 	loadObjects();
 	if (objects.size() > 1)
 	{
@@ -31,6 +35,7 @@ Scop::Scop(std::string objPath) : objModelPath(objPath)
 
 Scop::~Scop()
 {
+	globalDescriptorPool.reset();
 }
 
 void	Scop::run()
@@ -48,7 +53,21 @@ void	Scop::run()
 		uboBuffers[i]->map();
 	}
 
-	VulkanRenderSystem	renderSystem{vulkanDevice, vulkanRenderer.getSwapChainRenderPass()};
+	std::unique_ptr<VulkanDescriptorSetLayout> globalSetLayout = VulkanDescriptorSetLayout::Builder(vulkanDevice)
+		.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+		.build();
+	std::vector<VkDescriptorSet>	globalDescriptorSets(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+
+	for (size_t i = 0; i < globalDescriptorSets.size(); i++)
+	{
+		VkDescriptorBufferInfo bufferInfo = uboBuffers[i]->descriptorInfo();
+
+		VulkanDescriptorWriter(*globalSetLayout, *globalDescriptorPool)
+			.writeBuffer(0, &bufferInfo)
+			.build(globalDescriptorSets[i]);
+	}
+
+	VulkanRenderSystem	renderSystem{vulkanDevice, vulkanRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
 	Camera camera{};
 
 	camera.setViewTarget(glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f});
@@ -88,7 +107,7 @@ void	Scop::run()
 		if (commandBuffer != nullptr)
 		{
 			int frameIndex = vulkanRenderer.getCurrentFrameIndex();
-			FrameInfo	info{frameIndex, elapsedTime, camera, commandBuffer};
+			FrameInfo	info{frameIndex, elapsedTime, camera, commandBuffer, globalDescriptorSets[frameIndex]};
 			GlobalUBO	ubo{};
 
 			ubo.projectionView = camera.getProjectionMatrix() * camera.getViewMatrix();

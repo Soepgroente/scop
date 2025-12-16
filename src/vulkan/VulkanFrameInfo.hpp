@@ -12,6 +12,7 @@ struct FrameInfo
 	float			frameTime;
 	Camera&			camera;
 	VkCommandBuffer	commandBuffer;
+	VkDescriptorSet	globalDescriptorSet;
 };
 
 }	// namespace ve

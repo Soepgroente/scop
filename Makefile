@@ -17,6 +17,7 @@ SRCS	:=	main.cpp \
 			vulkan/MouseInput.cpp \
 			vulkan/VulkanBuffer.cpp \
 			vulkan/VulkanDevice.cpp \
+			vulkan/VulkanDescriptors.cpp \
 			vulkan/VulkanModel.cpp \
 			vulkan/VulkanObjFileParser.cpp \
 			vulkan/VulkanObject.cpp \

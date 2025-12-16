@@ -57,6 +57,7 @@ struct TransformComponent
 
 	glm::mat4	mat4() const noexcept;
 	glm::mat4	mat4(const glm::vec3& rotationCenter) const noexcept;
+	glm::mat3	normalMatrix() const noexcept;
 };
 
 class VulkanObject

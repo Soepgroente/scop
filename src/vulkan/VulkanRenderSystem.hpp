@@ -18,18 +18,18 @@ class VulkanRenderSystem
 {
 	public:
 
-	VulkanRenderSystem(VulkanDevice& device, VkRenderPass renderPass);
+	VulkanRenderSystem(VulkanDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
 	~VulkanRenderSystem();
 	
 	VulkanRenderSystem() = delete;
 	VulkanRenderSystem(const VulkanRenderSystem&) = delete;
 	VulkanRenderSystem& operator=(const VulkanRenderSystem&) = delete;
 	
-	void	renderObjects(FrameInfo& info, std::vector<VulkanObject>& objects, bool rotateModel);
+	void	renderObjects(FrameInfo& frameInfo, std::vector<VulkanObject>& objects, bool rotateModel);
 
 	private:
 
-	void	createPipelineLayout();
+	void	createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
 	void	createPipeline(VkRenderPass renderPass);
 
 	VulkanDevice&	vulkanDevice;

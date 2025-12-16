@@ -214,18 +214,23 @@ void	VulkanSwapChain::createImageViews()
 {
 	size_t size = swapChainImages.size();
 
-	if (swapChainImageViews.size() != size)
-	{
-		swapChainImageViews.resize(size);
-	}
+	swapChainImageViews.resize(size);
 	for (size_t i = 0; i < size; i++)
 	{
-		swapChainImageViews[i] = device.createImageView(
-			swapChainImages[i],
-			swapChainImageFormat,
-			VK_IMAGE_ASPECT_COLOR_BIT,
-			1
-		);
+		VkImageViewCreateInfo viewInfo{};
+
+		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		viewInfo.image = swapChainImages[i];
+		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		viewInfo.format = swapChainImageFormat;
+		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		viewInfo.subresourceRange.levelCount = 1;
+		viewInfo.subresourceRange.layerCount = 1;
+
+		if (vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to create texture image view!");
+		}
 	}
 }
 
@@ -425,19 +430,19 @@ VkSurfaceFormatKHR	VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<Vk
 
 VkPresentModeKHR	VulkanSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes)	const noexcept
 {
-	for (const auto &availablePresentMode : availablePresentModes)
+	for (const auto& availablePresentMode : availablePresentModes)
 	{
 		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
 		{
 			std::cout << "Present mode: Mailbox available" << std::endl;
-			// return availablePresentMode;
+			return availablePresentMode;
 		}
 	}
 	std::cout << "Choosing present mode: V-Sync (forced)" << std::endl;
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D	VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities)	const noexcept
+VkExtent2D	VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)	const noexcept
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 	{

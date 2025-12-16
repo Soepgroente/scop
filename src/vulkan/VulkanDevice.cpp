@@ -65,14 +65,8 @@ VulkanDevice::VulkanDevice(VulkanWindow &window) : window{window}
 
 VulkanDevice::~VulkanDevice()
 {
-	if (commandPool != VK_NULL_HANDLE)
-	{
-		vkDestroyCommandPool(device_, commandPool, nullptr);
-	}
-	if (device_ != VK_NULL_HANDLE)
-	{
-		vkDestroyDevice(device_, nullptr);
-	}
+	vkDestroyCommandPool(device_, commandPool, nullptr);
+	vkDestroyDevice(device_, nullptr);
 
 	if (enableValidationLayers == true)
 	{

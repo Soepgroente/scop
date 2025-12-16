@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VulkanDevice.hpp"
+#include "VulkanDescriptors.hpp"
 #include "VulkanObject.hpp"
 #include "VulkanRenderer.hpp"
 #include "VulkanRenderSystem.hpp"
@@ -43,6 +44,7 @@ class Scop
 	VulkanWindow	vulkanWindow{DEFAULT_HEIGHT, DEFAULT_WIDTH, "Scop"};
 	VulkanDevice	vulkanDevice{vulkanWindow};
 	VulkanRenderer	vulkanRenderer{vulkanWindow, vulkanDevice};
+	std::unique_ptr<VulkanDescriptorPool>	globalDescriptorPool{};
 
 	std::string					objModelPath;
 	std::vector<VulkanObject>	objects;

@@ -12,14 +12,14 @@ namespace ve {
 
 struct SimplePushConstantData
 {
-	glm::mat4	transform{1.0f};
-	alignas(16) glm::vec3	color;
+	glm::mat4	modelMatrix{1.0f};
+	glm::mat4	normalMatrix{1.0f};
 };
 
-VulkanRenderSystem::VulkanRenderSystem(VulkanDevice& device, VkRenderPass renderPass)
+VulkanRenderSystem::VulkanRenderSystem(VulkanDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
 	: vulkanDevice(device)
 {
-	createPipelineLayout();
+	createPipelineLayout(globalSetLayout);
 	createPipeline(renderPass);
 }
 
@@ -28,7 +28,7 @@ VulkanRenderSystem::~VulkanRenderSystem()
 	vkDestroyPipelineLayout(vulkanDevice.device(), pipelineLayout, nullptr);
 }
 
-void	VulkanRenderSystem::createPipelineLayout()
+void	VulkanRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
 {
 	VkPushConstantRange	pushConstantRange{};
 
@@ -36,10 +36,12 @@ void	VulkanRenderSystem::createPipelineLayout()
 	pushConstantRange.offset = 0;
 	pushConstantRange.size = sizeof(SimplePushConstantData);
 
+	std::vector<VkDescriptorSetLayout>	descriptorSetLayouts = {globalSetLayout};
 	VkPipelineLayoutCreateInfo	pipelineLayoutInfo{};
 
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 0;
+	pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
 	pipelineLayoutInfo.pSetLayouts = nullptr;
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
 	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
@@ -72,11 +74,18 @@ void	VulkanRenderSystem::createPipeline(VkRenderPass renderPass)
 	);
 }
 
-void	VulkanRenderSystem::renderObjects(FrameInfo& info, std::vector<VulkanObject>& objects, bool rotateModel)
+void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, std::vector<VulkanObject>& objects, bool rotateModel)
 {
-	vulkanPipeline->bind(info.commandBuffer);
+	vulkanPipeline->bind(frameInfo.commandBuffer);
 
-	glm::mat4	projectionView = info.camera.getProjectionMatrix() * info.camera.getViewMatrix();
+	// glm::mat4	projectionView = info.camera.getProjectionMatrix() * info.camera.getViewMatrix();
+	vkCmdBindDescriptorSets(
+		frameInfo.commandBuffer,
+		VK_PIPELINE_BIND_POINT_GRAPHICS,
+		pipelineLayout,
+		0, 1, &frameInfo.globalDescriptorSet,
+		0, nullptr
+	);
 	for (VulkanObject& object : objects)
 	{
 		SimplePushConstantData	push{};
@@ -87,19 +96,19 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& info, std::vector<VulkanObject
 			// object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
 			// object.transform.rotation.z = glm::mod(object.transform.rotation.z + 0.002f, glm::two_pi<float>());
 		}
-		push.color = object.color;
-		push.transform = projectionView * object.transform.mat4(object.model->getVertexCenter());
+		push.modelMatrix = object.transform.mat4();
+		push.normalMatrix = object.transform.normalMatrix();
 
 		vkCmdPushConstants(
-			info.commandBuffer,
+			frameInfo.commandBuffer,
 			pipelineLayout,
 			VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 			0,
 			sizeof(SimplePushConstantData),
 			&push
 		);
-		object.model->bind(info.commandBuffer);
-		object.model->draw(info.commandBuffer);
+		object.model->bind(frameInfo.commandBuffer);
+		object.model->draw(frameInfo.commandBuffer);
 	}
 }
 

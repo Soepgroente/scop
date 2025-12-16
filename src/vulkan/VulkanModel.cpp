@@ -119,17 +119,14 @@ std::vector<VkVertexInputBindingDescription>	VulkanModel::Vertex::getBindingDesc
 
 std::vector<VkVertexInputAttributeDescription>	VulkanModel::Vertex::getAttributeDescriptions()
 {
-	std::vector<VkVertexInputAttributeDescription>	attributeDescriptions(2);
+	std::vector<VkVertexInputAttributeDescription>	attributeDescriptions;
 
-	attributeDescriptions[0].binding = 0;
-	attributeDescriptions[0].location = 0;
-	attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[0].offset = offsetof(Vertex, pos);
+	attributeDescriptions.reserve(4);
+	attributeDescriptions.emplace_back(VkVertexInputAttributeDescription{0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos)});
+	attributeDescriptions.emplace_back(VkVertexInputAttributeDescription{1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)});
+	attributeDescriptions.emplace_back(VkVertexInputAttributeDescription{2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)});
+	attributeDescriptions.emplace_back(VkVertexInputAttributeDescription{3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, textureUv)});
 
-	attributeDescriptions[1].binding = 0;
-	attributeDescriptions[1].location = 1;
-	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[1].offset = offsetof(Vertex, color);
 	return attributeDescriptions;
 }
 
