@@ -90,7 +90,7 @@ class VulkanModel
 	static glm::vec3	calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept;
 };
 
-}
+}	// namespace ve
 
 namespace std {
 

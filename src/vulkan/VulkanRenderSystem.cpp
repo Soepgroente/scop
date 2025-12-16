@@ -42,15 +42,10 @@ void	VulkanRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLay
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
 	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-	pipelineLayoutInfo.pSetLayouts = nullptr;
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
 	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-	if (vkCreatePipelineLayout(
-			vulkanDevice.device(),
-			&pipelineLayoutInfo,
-			nullptr,
-			&pipelineLayout) != VK_SUCCESS)
+	if (vkCreatePipelineLayout(vulkanDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create pipeline layout!");
 	}
@@ -88,14 +83,14 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, std::vector<VulkanO
 	);
 	for (VulkanObject& object : objects)
 	{
-		SimplePushConstantData	push{};
-
 		if (rotateModel == true)
 		{
 			object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.015f, glm::two_pi<float>());
 			// object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
 			// object.transform.rotation.z = glm::mod(object.transform.rotation.z + 0.002f, glm::two_pi<float>());
 		}
+		SimplePushConstantData	push{};
+
 		push.modelMatrix = object.transform.mat4();
 		push.normalMatrix = object.transform.normalMatrix();
 
