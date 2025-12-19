@@ -7,11 +7,16 @@ DEBUG_FLAGS		:=	-g -fsanitize=address
 INCLUDES	=	-I./src \
 				-I/opt/homebrew/include \
 				-I./src/include \
-				-I./src/VectorClasses \
+				-I./src/vectors \
 				-I./src/vulkan \
 
 SRCS	:=	main.cpp \
 			Scop.cpp \
+			vectors/Mat3.cpp \
+			vectors/Mat4.cpp \
+			vectors/Quat.cpp \
+			vectors/Vec2.cpp \
+			vectors/Vec3.cpp \
 			vulkan/Camera.cpp \
 			vulkan/KeyboardInput.cpp \
 			vulkan/MouseInput.cpp \
