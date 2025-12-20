@@ -23,9 +23,9 @@ static float getNextFloat(std::istringstream& stream)
 	return nextFloat;
 }
 
-static glm::vec3	parseColor(std::istringstream& colorData)
+static vec3	parseColor(std::istringstream& colorData)
 {
-	glm::vec3	color;
+	vec3	color;
 
 	color.r = getNextFloat(colorData);
 	color.g = getNextFloat(colorData);
@@ -64,7 +64,7 @@ static void	addVertex(ObjInfo& obj, std::istringstream& vertexData)
 	{
 		throw std::runtime_error("Invalid vertex format");
 	}
-	obj.vertices.push_back(glm::vec3(x, y, z));
+	obj.vertices.push_back(vec3(x, y, z));
 }
 
 static void	addTextureCoord(ObjInfo& obj, std::istringstream& texCoordData)
@@ -80,7 +80,7 @@ static void	addTextureCoord(ObjInfo& obj, std::istringstream& texCoordData)
 	{
 		throw std::runtime_error("Invalid texture coordinate format");
 	}
-	obj.textureCoords.push_back(glm::vec2(u, v));
+	obj.textureCoords.push_back(vec2(u, v));
 }
 
 static void	addSurfaceNormal(ObjInfo& obj, std::istringstream& normalData)
@@ -94,7 +94,7 @@ static void	addSurfaceNormal(ObjInfo& obj, std::istringstream& normalData)
 	{
 		throw std::runtime_error("Invalid surface normal format");
 	}
-	obj.normals.push_back(glm::vec3(x, y, z));
+	obj.normals.push_back(vec3(x, y, z));
 }
 
 static void	addFace(ObjInfo& obj, std::istringstream& faceData)

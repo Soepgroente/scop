@@ -1,5 +1,7 @@
 #include "Vec2.hpp"
 
+#include <algorithm>
+
 vec2&	vec2::operator=(const vec2& other)
 {
 	if (this != &other)

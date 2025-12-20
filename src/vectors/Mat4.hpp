@@ -4,6 +4,7 @@
 #include <ostream>
 
 class vec3;
+class mat3;
 
 class mat4
 {
@@ -17,6 +18,7 @@ class mat4
 		 float m02, float m12, float m22, float m32,
 		 float m03, float m13, float m23, float m33);
 	mat4(std::array<float, 4> col0, std::array<float, 4> col1, std::array<float, 4> col2, std::array<float, 4> col3);
+	mat4(const mat3& matrix3x3);
 	~mat4() = default;
 	mat4(const mat4& other) = default;
 	mat4&	operator=(const mat4& other) = default;

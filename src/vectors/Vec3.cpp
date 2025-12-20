@@ -3,6 +3,8 @@
 #include "Quat.hpp"
 #include "Mat4.hpp"
 
+#include <algorithm>
+
 vec3&	vec3::operator=(const vec3& other)
 {
 	if (this != &other)

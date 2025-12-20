@@ -7,6 +7,7 @@
 #include "Mat4.hpp"
 
 #include <cmath>
+#include <limits>
 
 constexpr float	pi() noexcept { return 3.14159265358979323846f; }
 constexpr float	epsilon() noexcept { return std::numeric_limits<float>::epsilon(); }

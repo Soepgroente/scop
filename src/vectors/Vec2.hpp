@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <ostream>
 
 float	fastInverseSqrt(float number) noexcept;
@@ -63,3 +64,21 @@ class vec2
 };
 
 std::ostream&	operator<<(std::ostream& os, const vec2& v);
+
+namespace std {
+
+template<>
+struct hash<vec2>
+{
+	size_t operator()(const vec2& v) const noexcept
+	{
+		size_t h1 = hash<float>{}(v.x);
+		size_t h2 = hash<float>{}(v.y);
+		size_t seed = h1;
+
+		seed ^= h2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		return seed;
+	}
+};
+
+}	// namespace std

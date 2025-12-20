@@ -17,6 +17,7 @@ SRCS	:=	main.cpp \
 			vectors/Quat.cpp \
 			vectors/Vec2.cpp \
 			vectors/Vec3.cpp \
+			vectors/Vectors.cpp \
 			vulkan/Camera.cpp \
 			vulkan/KeyboardInput.cpp \
 			vulkan/MouseInput.cpp \
@@ -60,7 +61,7 @@ RPATH_DIR	:=	/usr/local/lib
 LDFLAGS		:=	-lvulkan -lm -Wl,-rpath,$(RPATH_DIR)
 
 ifeq ($(UNAME_S), Linux)
-	ECHO_MESSAGE = "Linux"
+	ECHO_MESSAGE = "Linux"	
 	INCLUDES += -isystem $(USER)/.capt/root/usr/include
 	LIBS = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl `pkg-config --static --libs glfw3`
 	BASE_CPPFLAGS += `pkg-config --cflags glfw3`

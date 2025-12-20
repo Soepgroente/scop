@@ -15,9 +15,21 @@ class vec3
 {
 	public:
 
-	float	x;
-	float	y;
-	float	z;
+	union
+	{
+		struct
+		{
+			float	x;
+			float	y;
+			float	z;
+		};
+		struct
+		{
+			float	r;
+			float	g;
+			float	b;
+		};
+	};
 
 	vec3() : x(0.0f), y(0.0f), z(0.0f) {}
 	vec3(float val) : x(val), y(val), z(val) {}
@@ -58,7 +70,7 @@ class vec3
 
 	static float	angle(const vec3& a, const vec3& b) noexcept;
 	static float	angleRadians(const vec3& a, const vec3& b) noexcept { return vec3::angle(a, b); }
-	static float	angleDegrees(const vec3& a, const vec3& b) noexcept { return radians(vec3::angle(a, b)); }
+	static float	angleDegrees(const vec3& a, const vec3& b) noexcept { return radiansToDegrees(vec3::angle(a, b)); }
 	static float	distance(const vec3& a, const vec3& b) noexcept { return (b - a).length(); }
 
 	static float	dot(const vec3& a, const vec3& b) noexcept { return a.x * b.x + a.y * b.y + a.z * b.z; }
@@ -83,3 +95,23 @@ class vec3
 };
 
 std::ostream&	operator<<(std::ostream& os, const vec3& v);
+
+namespace std {
+
+template<>
+struct hash<vec3>
+{
+	size_t operator()(const vec3& v) const noexcept
+	{
+		size_t h1 = hash<float>{}(v.x);
+		size_t h2 = hash<float>{}(v.y);
+		size_t h3 = hash<float>{}(v.z);
+		size_t seed = h1;
+
+		seed ^= h2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		seed ^= h3 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		return seed;
+	}
+};
+
+}	// namespace std

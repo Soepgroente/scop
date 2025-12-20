@@ -12,8 +12,8 @@ namespace ve {
 
 struct SimplePushConstantData
 {
-	glm::mat4	modelMatrix{1.0f};
-	glm::mat4	normalMatrix{1.0f};
+	mat4	modelMatrix{1.0f};
+	mat4	normalMatrix{1.0f};
 };
 
 VulkanRenderSystem::VulkanRenderSystem(VulkanDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
@@ -73,7 +73,7 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, std::vector<VulkanO
 {
 	vulkanPipeline->bind(frameInfo.commandBuffer);
 
-	// glm::mat4	projectionView = info.camera.getProjectionMatrix() * info.camera.getViewMatrix();
+	// mat4	projectionView = info.camera.getProjectionMatrix() * info.camera.getViewMatrix();
 	vkCmdBindDescriptorSets(
 		frameInfo.commandBuffer,
 		VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -85,13 +85,13 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, std::vector<VulkanO
 	{
 		if (rotateModel == true)
 		{
-			object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.015f, glm::two_pi<float>());
-			// object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
-			// object.transform.rotation.z = glm::mod(object.transform.rotation.z + 0.002f, glm::two_pi<float>());
+			object.transform.rotation.y = std::fmod(object.transform.rotation.y + 0.015f, two_pi());
+			// object.transform.rotation.x = mod(object.transform.rotation.x + 0.005f, two_pi<float>());
+			// object.transform.rotation.z = mod(object.transform.rotation.z + 0.002f, two_pi<float>());
 		}
 		SimplePushConstantData	push{};
 
-		push.modelMatrix = object.transform.mat4();
+		push.modelMatrix = object.transform.matrix4();
 		push.normalMatrix = object.transform.normalMatrix();
 
 		vkCmdPushConstants(

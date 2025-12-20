@@ -3,8 +3,6 @@
 #include "Vectors.hpp"
 #include "VulkanModel.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <memory>
 #include <map>
 
@@ -21,14 +19,14 @@ struct ImageInfo
 struct Material
 {
 	std::string	name;
-	glm::vec3	ambientClr;
-	glm::vec3	diffuseClr;
-	glm::vec3	specularClr;
-	float		shininess;
-	float		opacity;
-	float		illuminationModel;
-	float		refractionIndex;
-	bool		smoothShading;
+	vec3	ambientClr;
+	vec3	diffuseClr;
+	vec3	specularClr;
+	float	shininess;
+	float	opacity;
+	float	illuminationModel;
+	float	refractionIndex;
+	bool	smoothShading;
 };
 
 struct ObjComponent
@@ -78,7 +76,7 @@ class VulkanObject
 	static id_t		currentID;
 
 	std::shared_ptr<VulkanModel>	model;
-	glm::vec3						color;
+	vec3							color;
 	TransformComponent				transform{};
 	
 	id_t	getID() const noexcept { return id; }

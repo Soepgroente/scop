@@ -5,7 +5,7 @@ namespace ve {
 void	MouseInput::move(GLFWwindow* window, VulkanObject& object, float deltaTime)
 {
 	MousePos	currentMousePos;
-	vec2		mouseDelta;
+	MousePos	mouseDelta;
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
 	{

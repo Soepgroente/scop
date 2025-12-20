@@ -221,7 +221,7 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 						{
 							vertex.normal = obj.normals[norm[ti]];
 						}
-						vertex.color = generateSoftGreyscale();
+						vertex.color = generateRandomColor();
 						if (uniqueVertices.count(vertex) == 0)
 						{
 							uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());

@@ -1,6 +1,6 @@
 #include "Vectors.hpp"
 
-float	fastInverseSqrt(float number)
+float	fastInverseSqrt(float number) noexcept
 {
 	FloatIntUnion	floatInt;
 	

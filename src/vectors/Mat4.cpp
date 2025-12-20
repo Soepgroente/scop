@@ -1,3 +1,4 @@
+#include "Mat3.hpp"
 #include "Mat4.hpp"
 #include "Vec3.hpp"
 
@@ -36,6 +37,14 @@ mat4::mat4(std::array<float, 4> col0, std::array<float, 4> col1, std::array<floa
 	elements[0][1] = col1[0]; elements[1][1] = col1[1]; elements[2][1] = col1[2]; elements[3][1] = col1[3];
 	elements[0][2] = col2[0]; elements[1][2] = col2[1]; elements[2][2] = col2[2]; elements[3][2] = col2[3];
 	elements[0][3] = col3[0]; elements[1][3] = col3[1]; elements[2][3] = col3[2]; elements[3][3] = col3[3];
+}
+
+mat4::mat4(const mat3& matrix3x3)
+{
+	elements[0][0] = matrix3x3.elements[0][0]; elements[1][0] = matrix3x3.elements[1][0]; elements[2][0] = matrix3x3.elements[2][0]; elements[3][0] = 0.0f;
+	elements[0][1] = matrix3x3.elements[0][1]; elements[1][1] = matrix3x3.elements[1][1]; elements[2][1] = matrix3x3.elements[2][1]; elements[3][1] = 0.0f;
+	elements[0][2] = matrix3x3.elements[0][2]; elements[1][2] = matrix3x3.elements[1][2]; elements[2][2] = matrix3x3.elements[2][2]; elements[3][2] = 0.0f;
+	elements[0][3] = 0.0f;                     elements[1][3] = 0.0f;                     elements[2][3] = 0.0f;                     elements[3][3] = 1.0f;
 }
 
 mat4	mat4::operator*(const mat4& other) const
