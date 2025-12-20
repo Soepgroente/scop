@@ -20,6 +20,7 @@ class vec3
 	float	z;
 
 	vec3() : x(0.0f), y(0.0f), z(0.0f) {}
+	vec3(float val) : x(val), y(val), z(val) {}
 	vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 	explicit vec3(const vec2& v2, float z = 0.0f) : x(v2.x), y(v2.y), z(z) {}
 	vec3(const vec3& other) : x(other.x), y(other.y), z(other.z) {}
@@ -51,18 +52,19 @@ class vec3
 	
 	vec3	clone() const noexcept { return vec3(x, y, z); }
 	vec3&	invert() noexcept { *this *= -1.0f; return *this; }
+	vec3	inverted() const noexcept { return this->clone().invert(); }
 	vec3	reflect(const vec3& normal) const noexcept { return *this - 2.0f * vec3::dot(*this, normal) * normal; }
 	float	lengthSquared() const noexcept { return x * x + y * y + z * z; }
 
 	static float	angle(const vec3& a, const vec3& b) noexcept;
 	static float	angleRadians(const vec3& a, const vec3& b) noexcept { return vec3::angle(a, b); }
-	static float	angleDegrees(const vec3& a, const vec3& b) noexcept { return radiansToDegrees(vec3::angle(a, b)); }
+	static float	angleDegrees(const vec3& a, const vec3& b) noexcept { return radians(vec3::angle(a, b)); }
 	static float	distance(const vec3& a, const vec3& b) noexcept { return (b - a).length(); }
 
 	static float	dot(const vec3& a, const vec3& b) noexcept { return a.x * b.x + a.y * b.y + a.z * b.z; }
-	static vec3	cross(const vec3& a, const vec3& b) noexcept;
+	static vec3		cross(const vec3& a, const vec3& b) noexcept;
 	static float	distanceSquared(const vec3& a, const vec3& b) noexcept;
-	static vec3	lerp(const vec3& a, const vec3& b, float t) noexcept;
+	static vec3		lerp(const vec3& a, const vec3& b, float t) noexcept;
 	
 	static vec3	zero() noexcept { return vec3(0.0f, 0.0f, 0.0f); }
 	static vec3	one() noexcept { return vec3(1.0f, 1.0f, 1.0f); }
@@ -74,6 +76,8 @@ class vec3
 	static vec3	backward() noexcept { return vec3(0.0f, 0.0f, -1.0f); }
 
 	friend vec3	operator*(float scalar, const vec3& v) noexcept { return vec3(v.x * scalar, v.y * scalar, v.z * scalar); }
+	friend vec3 operator/(float scalar, const vec3& v) noexcept { return vec3(scalar / v.x, scalar / v.y, scalar / v.z); }
+	friend vec3	operator-(const vec3& v) noexcept { return vec3(-v.x, -v.y, -v.z); }
 
 	private:
 };

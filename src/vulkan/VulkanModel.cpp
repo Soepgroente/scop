@@ -1,5 +1,5 @@
+#include "Vectors.hpp"
 #include "VulkanModel.hpp"
-// #include "ObjectParser.hpp"
 #include "VulkanObject.hpp"
 #include "Scop.hpp"
 
@@ -130,7 +130,7 @@ std::vector<VkVertexInputAttributeDescription>	VulkanModel::Vertex::getAttribute
 	return attributeDescriptions;
 }
 
-glm::vec3	VulkanModel::calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept
+vec3	VulkanModel::calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept
 {
 	float	xMin, xMax,
 			yMin, yMax,
@@ -149,16 +149,16 @@ glm::vec3	VulkanModel::calculateBoundingCenter(const std::vector<Vertex>& vertic
 	zMax = std::max_element(vertices.begin(), vertices.end(),
 		[](const Vertex& a, const Vertex& b) { return a.pos.z < b.pos.z; })->pos.z;
 
-	return glm::vec3 {
+	return vec3 {
 		(xMin + xMax) / 2.0f,
 		(yMin + yMax) / 2.0f,
 		(zMin + zMax) / 2.0f
 	};
 }
 
-glm::vec3	VulkanModel::calculateVertexCenter(const std::vector<Vertex>& vertices) noexcept
+vec3	VulkanModel::calculateVertexCenter(const std::vector<Vertex>& vertices) noexcept
 {
-	glm::vec3	center{};
+	vec3	center{};
 
 	for (const Vertex& vertex : vertices)
 	{

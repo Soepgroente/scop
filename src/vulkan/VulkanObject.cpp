@@ -4,21 +4,21 @@ namespace ve {
 
 id_t	VulkanObject::currentID = 0;
 
-glm::mat4	TransformComponent::mat4() const noexcept
+mat4	TransformComponent::matrix4() const noexcept
 {
-	const float c3 = glm::cos(rotation.z);
-	const float s3 = glm::sin(rotation.z);
-	const float c2 = glm::cos(rotation.x);
-	const float s2 = glm::sin(rotation.x);
-	const float c1 = glm::cos(rotation.y);
-	const float s1 = glm::sin(rotation.y);
-	return glm::mat4
-	{
+	const float c3 = std::cos(rotation.z);
+	const float s3 = std::sin(rotation.z);
+	const float c2 = std::cos(rotation.x);
+	const float s2 = std::sin(rotation.x);
+	const float c1 = std::cos(rotation.y);
+	const float s1 = std::sin(rotation.y);
+
+	return mat4(
 		{
 			scale.x * (c1 * c3 + s1 * s2 * s3),
 			scale.x * (c2 * s3),
 			scale.x * (c1 * s2 * s3 - c3 * s1),
-			0.0f,
+			0.0f
 		},
 		{
 			scale.y * (c3 * s1 * s2 - c1 * s3),
@@ -32,24 +32,30 @@ glm::mat4	TransformComponent::mat4() const noexcept
 			scale.z * (c1 * c2),
 			0.0f,
 		},
-		{translation.x, translation.y, translation.z, 1.0f}
-	};
+		{
+			translation.x,
+			translation.y,
+			translation.z,
+			1.0f
+		}
+	);
 }
 
-glm::mat4	TransformComponent::mat4(const glm::vec3& rotationCenter) const noexcept
+mat4	TransformComponent::matrix4(const vec3& rotationCenter) const noexcept
 {
-	glm::mat4 translateToOrigin = glm::translate(glm::mat4(1.0f), -rotationCenter);
-	glm::mat4 translateBack = glm::translate(glm::mat4(1.0f), rotationCenter);
-	glm::mat4 finalTranslate = glm::translate(glm::mat4(1.0f), translation);
+	mat4 translateToOrigin = mat4(1.0f).translate(rotationCenter.inverted());
+	mat4 translateBack = mat4(1.0f).translate(rotationCenter);
+	mat4 finalTranslate = mat4(1.0f).translate(translation);
 
-	const float c3 = glm::cos(rotation.z);
-	const float s3 = glm::sin(rotation.z);
-	const float c2 = glm::cos(rotation.x);
-	const float s2 = glm::sin(rotation.x);
-	const float c1 = glm::cos(rotation. y);
-	const float s1 = glm::sin(rotation.y);
+	const float c3 = std::cos(rotation.z);
+	const float s3 = std::sin(rotation.z);
+	const float c2 = std::cos(rotation.x);
+	const float s2 = std::sin(rotation.x);
+	const float c1 = std::cos(rotation.y);
+	const float s1 = std::sin(rotation.y);
 
-	glm::mat4 rotScale = glm::mat4{
+	mat4 rotScale = mat4
+	{
 		{
 			scale.x * (c1 * c3 + s1 * s2 * s3),
 			scale.x * (c2 * s3),
@@ -74,17 +80,17 @@ glm::mat4	TransformComponent::mat4(const glm::vec3& rotationCenter) const noexce
 	return finalTranslate * translateBack * rotScale * translateToOrigin;
 }
 
-glm::mat3	TransformComponent::normalMatrix() const noexcept
+mat3	TransformComponent::normalMatrix() const noexcept
 {
-	const float		c3 = glm::cos(rotation.z);
-	const float		s3 = glm::sin(rotation.z);
-	const float		c2 = glm::cos(rotation.x);
-	const float		s2 = glm::sin(rotation.x);
-	const float		c1 = glm::cos(rotation.y);
-	const float		s1 = glm::sin(rotation.y);
-	const glm::vec3	invScale = 1.0f / scale;
+	const float c3 = std::cos(rotation.z);
+	const float s3 = std::sin(rotation.z);
+	const float c2 = std::cos(rotation.x);
+	const float s2 = std::sin(rotation.x);
+	const float c1 = std::cos(rotation.y);
+	const float s1 = std::sin(rotation.y);
+	const vec3	invScale = 1.0f / scale;
 
-	return glm::mat3
+	return mat3
 	{
 		{
 			invScale.x * (c1 * c3 + s1 * s2 * s3),
@@ -120,4 +126,4 @@ ImageInfo	loadImage(const std::string& imagePath)
 	return imageInfo;
 }
 
-} // namespace ve
+}	// namespace ve

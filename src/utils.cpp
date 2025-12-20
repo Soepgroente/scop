@@ -14,25 +14,25 @@ static float	randomFloat()
 	return distribution(engine);
 }
 
-glm::vec3	generateRandomColor()
+vec3	generateRandomColor()
 {
-	return glm::vec3(randomFloat(), randomFloat(), randomFloat());
+	return vec3(randomFloat(), randomFloat(), randomFloat());
 }
 
-glm::vec3	generateRandomGreyscale()
+vec3	generateRandomGreyscale()
 {
 	float	grey = randomFloat();
 
-	return glm::vec3(grey, grey, grey);
+	return vec3(grey, grey, grey);
 }
 
-glm::vec3	generateSoftGreyscale()
+vec3	generateSoftGreyscale()
 {
 	static std::default_random_engine	engine(std::chrono::system_clock::now().time_since_epoch().count());
 	static std::uniform_real_distribution<float>	distribution(0.25f, 0.4f);
 	float	grey = distribution(engine);
 
-	return glm::vec3(grey, grey, grey);
+	return vec3(grey, grey, grey);
 }
 
 } // namespace ve

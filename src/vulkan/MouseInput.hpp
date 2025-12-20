@@ -1,9 +1,16 @@
 #pragma once
 
+#include "Vectors.hpp"
 #include "VulkanWindow.hpp"
 #include "VulkanObject.hpp"
 
 namespace ve {
+
+struct MousePos
+{
+	double	x;
+	double	y;
+};
 
 class	MouseInput
 {
@@ -13,10 +20,10 @@ class	MouseInput
 
 	private:
 
-	float	sensitivity{0.02f};
-	glm::dvec2	lastMousePos{0.0, 0.0};
-	bool	firstMouseFrame{true};
-	int		inputMode{GLFW_CURSOR_NORMAL};
+	float		sensitivity{0.02f};
+	MousePos	lastMousePos{0.0, 0.0};
+	bool		firstMouseFrame{true};
+	int			inputMode{GLFW_CURSOR_NORMAL};
 };
 
 } // namespace ve

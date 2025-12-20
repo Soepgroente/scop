@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Vectors.hpp"
 #include "VulkanModel.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -42,22 +43,22 @@ struct ObjInfo
 {
 	std::string					name;
 	std::string					mtlFile;
-	std::vector<glm::vec3>		vertices;
-	std::vector<glm::vec2>		textureCoords;
-	std::vector<glm::vec3>		normals;
+	std::vector<vec3>		vertices;
+	std::vector<vec2>		textureCoords;
+	std::vector<vec3>		normals;
 	std::vector<ObjComponent>	components;
 	std::map<std::string, Material>		materials;
 };
 
 struct TransformComponent
 {
-	glm::vec3	translation{};
-	glm::vec3	scale{1.0f, 1.0f, 1.0f};
-	glm::vec3	rotation{};
+	vec3	translation{};
+	vec3	scale{1.0f, 1.0f, 1.0f};
+	vec3	rotation{};
 
-	glm::mat4	mat4() const noexcept;
-	glm::mat4	mat4(const glm::vec3& rotationCenter) const noexcept;
-	glm::mat3	normalMatrix() const noexcept;
+	mat4	matrix4() const noexcept;
+	mat4	matrix4(const vec3& rotationCenter) const noexcept;
+	mat3	normalMatrix() const noexcept;
 };
 
 class VulkanObject

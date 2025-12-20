@@ -15,8 +15,8 @@ namespace ve {
 
 struct GlobalUBO
 {
-	alignas(16) glm::mat4	projectionView{1.0f};
-	alignas(16) glm::vec3	lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
+	alignas(16) mat4	projectionView{1.0f};
+	alignas(16) vec3	lightDirection = vec3(1.0f, -3.0f, -1.0f).normalized();
 };
 
 Scop::Scop(std::string objPath) : objModelPath(objPath)
@@ -70,7 +70,7 @@ void	Scop::run()
 	VulkanRenderSystem	renderSystem{vulkanDevice, vulkanRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
 	Camera camera{};
 
-	camera.setViewTarget(glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f});
+	camera.setViewTarget(vec3{0.0f, 0.0f, 0.0f}, vec3{0.0f, 0.0f, 0.0f});
 	
 	std::chrono::high_resolution_clock::time_point	currentTime, newTime;
 	float	elapsedTime = 0.0f;
@@ -101,7 +101,7 @@ void	Scop::run()
 		mouseInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
 		camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 		aspectRatio = vulkanRenderer.getAspectRatio();
-		camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 100.0f);
+		camera.setPerspectiveProjection(radians(50.0f), aspectRatio, 0.1f, 100.0f);
 		
 		commandBuffer = vulkanRenderer.beginFrame();
 		if (commandBuffer != nullptr)

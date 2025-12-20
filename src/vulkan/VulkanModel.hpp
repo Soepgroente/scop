@@ -27,10 +27,10 @@ class VulkanModel
 
 	struct Vertex
 	{
-		glm::vec3	pos;
-		glm::vec3	color;
-		glm::vec3	normal;
-		glm::vec2	textureUv{};
+		vec3	pos;
+		vec3	color;
+		vec3	normal;
+		vec2	textureUv{};
 
 		static std::vector<VkVertexInputBindingDescription>		getBindingDescriptions();
 		static std::vector<VkVertexInputAttributeDescription>	getAttributeDescriptions();
@@ -63,8 +63,8 @@ class VulkanModel
 	void	draw(VkCommandBuffer commandBuffer);
 	void	setName(const std::string& name) { this->name = name; }
 
-	glm::vec3	getVertexCenter() const noexcept { return vertexCenter; }
-	glm::vec3	getBoundingCenter() const noexcept { return boundingCenter; }
+	vec3	getVertexCenter() const noexcept { return vertexCenter; }
+	vec3	getBoundingCenter() const noexcept { return boundingCenter; }
 	static std::unique_ptr<VulkanModel>	createModelFromFile(VulkanDevice& device, const std::string& filepath);
 
 	private:
@@ -80,14 +80,14 @@ class VulkanModel
 
 	uint32_t			indexCount;
 
-	glm::vec3			vertexCenter;
-	glm::vec3			boundingCenter;
+	vec3			vertexCenter;
+	vec3			boundingCenter;
 
 	void	createVertexBuffers(const std::vector<Vertex>& vertices);
 	void	createIndexBuffers(const std::vector<uint32_t>& indices);
 
-	static glm::vec3	calculateVertexCenter(const std::vector<Vertex>& vertices) noexcept;
-	static glm::vec3	calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept;
+	static vec3	calculateVertexCenter(const std::vector<Vertex>& vertices) noexcept;
+	static vec3	calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept;
 };
 
 }	// namespace ve

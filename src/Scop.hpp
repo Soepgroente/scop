@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Vectors.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanDescriptors.hpp"
 #include "VulkanObject.hpp"
@@ -54,9 +55,9 @@ class Scop
 
 std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath);
 
-glm::vec3	generateRandomColor();
-glm::vec3	generateRandomGreyscale();
-glm::vec3	generateSoftGreyscale();
+vec3	generateRandomColor();
+vec3	generateRandomGreyscale();
+vec3	generateSoftGreyscale();
 ImageInfo	loadImage(const std::string& imagePath);
 
 }

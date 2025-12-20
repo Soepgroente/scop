@@ -4,8 +4,8 @@ namespace ve {
 
 void	MouseInput::move(GLFWwindow* window, VulkanObject& object, float deltaTime)
 {
-	glm::dvec2	currentMousePos;
-	glm::dvec2	mouseDelta;
+	MousePos	currentMousePos;
+	vec2		mouseDelta;
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
 	{
@@ -33,14 +33,14 @@ void	MouseInput::move(GLFWwindow* window, VulkanObject& object, float deltaTime)
 		firstMouseFrame = false;
 	}
 
-	mouseDelta = currentMousePos - lastMousePos;
+	mouseDelta = {currentMousePos.x - lastMousePos.x, currentMousePos.y - lastMousePos.y};
 	lastMousePos = currentMousePos;
 
 	object.transform.rotation.y += static_cast<float>(mouseDelta.x) * sensitivity * deltaTime;
 	object.transform.rotation.x += static_cast<float>(-mouseDelta.y) * sensitivity * deltaTime;
 
-	object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -glm::half_pi<float>() + 0.01f, glm::half_pi<float>() - 0.01f);
-	object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
+	object.transform.rotation.x = std::clamp(object.transform.rotation.x, -half_pi() + 0.01f, half_pi() - 0.01f);
+	object.transform.rotation.y = std::fmod(object.transform.rotation.y, two_pi());
 }
 
 } // namespace ve

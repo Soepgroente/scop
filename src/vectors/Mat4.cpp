@@ -1,73 +1,41 @@
 #include "Mat4.hpp"
 #include "Vec3.hpp"
 
-mat4::mat4() : elements{0.0f} {}
+#include <cmath>
+#include <cstring>
 
-mat4::mat4(float diagonal) : elements{0.0f}
+mat4::mat4() : elements{{0.0f}, {0.0f}, {0.0f}, {0.0f}} {}
+
+mat4::mat4(float diagonal) : elements{{0.0f}, {0.0f}, {0.0f}, {0.0f}}
 {
-	elements[0] = diagonal;
-	elements[1 + 1 * 4] = diagonal;
-	elements[2 + 2 * 4] = diagonal;
-	elements[3 + 3 * 4] = diagonal;
+	elements[0][0] = diagonal;
+	elements[1][1] = diagonal;
+	elements[2][2] = diagonal;
+	elements[3][3] = diagonal;
 }
 
-mat4::mat4(float elements[4 * 4])
+mat4::mat4(float elements[16])
 {
-	for (int i = 0; i < 16; i++)
-	{
-		this->elements[i] = elements[i];
-	}
+	std::memcpy(this->elements, elements, 16 * sizeof(float));
 }
 
-mat4::mat4(float col0[4], float col1[4], float col2[4], float col3[4])
+mat4::mat4(float m00, float m10, float m20, float m30,
+		   float m01, float m11, float m21, float m31,
+		   float m02, float m12, float m22, float m32,
+		   float m03, float m13, float m23, float m33)
 {
-	for (int row = 0; row < 4; row++)
-	{
-		elements[0 + row * 4] = col0[row];
-		elements[1 + row * 4] = col1[row];
-		elements[2 + row * 4] = col2[row];
-		elements[3 + row * 4] = col3[row];
-	}
+	elements[0][0] = m00; elements[1][0] = m10; elements[2][0] = m20; elements[3][0] = m30;
+	elements[0][1] = m01; elements[1][1] = m11; elements[2][1] = m21; elements[3][1] = m31;
+	elements[0][2] = m02; elements[1][2] = m12; elements[2][2] = m22; elements[3][2] = m32;
+	elements[0][3] = m03; elements[1][3] = m13; elements[2][3] = m23; elements[3][3] = m33;
 }
 
-mat4::mat4(const mat4& other)
+mat4::mat4(std::array<float, 4> col0, std::array<float, 4> col1, std::array<float, 4> col2, std::array<float, 4> col3)
 {
-	for (int i = 0; i < 16; i++)
-	{
-		elements[i] = other.elements[i];
-	}
-}
-
-mat4&	mat4::operator=(const mat4& other)
-{
-	if (this != &other)
-	{
-		for (int i = 0; i < 16; i++)
-		{
-			elements[i] = other.elements[i];
-		}
-	}
-	return *this;
-}
-
-float&	mat4::operator[](int index) noexcept
-{
-	return elements[index];
-}
-
-const float&	mat4::operator[](int index) const noexcept
-{
-	return elements[index];
-}
-
-float&	mat4::at(int row, int col) noexcept
-{
-	return elements[col + row * 4];
-}
-
-const float&	mat4::at(int row, int col) const noexcept
-{
-	return elements[col + row * 4];
+	elements[0][0] = col0[0]; elements[1][0] = col0[1]; elements[2][0] = col0[2]; elements[3][0] = col0[3];
+	elements[0][1] = col1[0]; elements[1][1] = col1[1]; elements[2][1] = col1[2]; elements[3][1] = col1[3];
+	elements[0][2] = col2[0]; elements[1][2] = col2[1]; elements[2][2] = col2[2]; elements[3][2] = col2[3];
+	elements[0][3] = col3[0]; elements[1][3] = col3[1]; elements[2][3] = col3[2]; elements[3][3] = col3[3];
 }
 
 mat4	mat4::operator*(const mat4& other) const
@@ -80,11 +48,11 @@ mat4	mat4::operator*(const mat4& other) const
 		{
 			float	sum = 0.0f;
 
-			for (int e = 0; e < 4; e++)
+			for (int i = 0; i < 4; i++)
 			{
-				sum += this->at(row, e) * other.at(e, col);
+				sum += this->elements[row][i] * other.elements[i][col];
 			}
-			result.at(row, col) = sum;
+			result.elements[row][col] = sum;
 		}
 	}
 	return result;
@@ -98,9 +66,9 @@ mat4&	mat4::operator*=(const mat4& other)
 
 mat4&	mat4::translate(const vec3& translation) noexcept
 {
-	elements[3 + 0 * 4] += translation.x;
-	elements[3 + 1 * 4] += translation.y;
-	elements[3 + 2 * 4] += translation.z;
+	elements[3][0] += translation.x;
+	elements[3][1] += translation.y;
+	elements[3][2] += translation.z;
 	return *this;
 }
 
@@ -108,30 +76,39 @@ mat4	mat4::translated(const vec3& translation) const noexcept
 {
 	mat4	result = *this;
 
-	result.elements[3 + 0 * 4] += translation.x;
-	result.elements[3 + 1 * 4] += translation.y;
-	result.elements[3 + 2 * 4] += translation.z;
+	result.translate(translation);
 	return result;
 }
 
+/*	Assumes axis is already normalized	*/
+
 mat4&	mat4::rotate(float angleRadians, const vec3& axis) noexcept
 {
-	const float	c = cosf(angleRadians);
-	const float	s = sinf(angleRadians);
-	const float	oneMinusC = 1.0f - c;
+	float	cosAngle = std::cos(angleRadians);
+	float	sinAngle = std::sin(angleRadians);
+	mat4	r;
 
-	at(0, 0) = axis.x * axis.x * oneMinusC + c;
-	at(0, 1) = axis.x * axis.y * oneMinusC - axis.z * s;
-	at(0, 2) = axis.x * axis.z * oneMinusC + axis.y * s;
+	r.elements[0][0] = cosAngle + axis.x * axis.x * (1 - cosAngle);
+	r.elements[0][1] = axis.x * axis.y * (1 - cosAngle) - axis.z * sinAngle;
+	r.elements[0][2] = axis.x * axis.z * (1 - cosAngle) + axis.y * sinAngle;
+	r.elements[0][3] = 0.0f;
 
-	at(1, 0) = axis.y * axis.x * oneMinusC + axis.z * s;
-	at(1, 1) = axis.y * axis.y * oneMinusC + c;
-	at(1, 2) = axis.y * axis.z * oneMinusC - axis.x * s;
+	r.elements[1][0] = axis.y * axis.x * (1 - cosAngle) + axis.z * sinAngle;
+	r.elements[1][1] = cosAngle + axis.y * axis.y * (1 - cosAngle);
+	r.elements[1][2] = axis.y * axis.z * (1 - cosAngle) - axis.x * sinAngle;
+	r.elements[1][3] = 0.0f;
 
-	at(2, 0) = axis.z * axis.x * oneMinusC - axis.y * s;
-	at(2, 1) = axis.z * axis.y * oneMinusC + axis.x * s;
-	at(2, 2) = axis.z * axis.z * oneMinusC + c;
+	r.elements[2][0] = axis.z * axis.x * (1 - cosAngle) - axis.y * sinAngle;
+	r.elements[2][1] = axis.z * axis.y * (1 - cosAngle) + axis.x * sinAngle;
+	r.elements[2][2] = cosAngle + axis.z * axis.z * (1 - cosAngle);
+	r.elements[2][3] = 0.0f;
 
+	r.elements[3][0] = 0.0f;
+	r.elements[3][1] = 0.0f;
+	r.elements[3][2] = 0.0f;
+	r.elements[3][3] = 1.0f;
+
+	*this *= r;
 	return *this;
 }
 
@@ -150,7 +127,7 @@ std::ostream&	operator<<(std::ostream& os, const mat4& matrix)
 		os << "[";
 		for (int col = 0; col < 4; col++)
 		{
-			os << matrix.at(row, col) << "]";
+			os << matrix.elements[row][col] << "]";
 			if (col < 3)
 			{
 				os << " [";
