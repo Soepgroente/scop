@@ -1,47 +1,14 @@
 #include "Quat.hpp"
-#include "Vec3.hpp"
 
-quat::quat() noexcept
+quat::quat(float angle, const vec3& v3)
 {
-	w = 1.0f;
-	x = 0.0f;
-	y = 0.0f;
-	z = 0.0f;
+	w = std::cos(angle / 2.0f);
+	x = v3.x * std::sin(angle / 2.0f);
+	y = v3.y * std::sin(angle / 2.0f);
+	z = v3.z * std::sin(angle / 2.0f);
 }
 
-quat::quat(const vec3& v3) noexcept
-{
-	w = 0.0f;
-	x = v3.x;
-	y = v3.y;
-	z = v3.z;
-}
-
-quat::quat(float w, float x, float y, float z) noexcept
-{
-	this->w = w;
-	this->x = x;
-	this->y = y;
-	this->z = z;
-}
-
-quat::quat(float w, const vec3& v3) noexcept
-{
-	this->w = w;
-	x = v3.x;
-	y = v3.y;
-	z = v3.z;
-}
-
-quat::quat(const quat& other) noexcept
-{
-	w = other.w;
-	x = other.x;
-	y = other.y;
-	z = other.z;
-}
-
-quat&	quat::operator=(const quat& other) noexcept
+quat&	quat::operator=(const quat& other)
 {
 	if (this != &other)
 	{
@@ -58,7 +25,7 @@ quat	quat::clone() const noexcept
 	return quat(w, x, y, z);
 }
 
-quat&	quat::invert() noexcept
+quat&	quat::conjugate() noexcept
 {
 	x = -x;
 	y = -y;
@@ -66,9 +33,9 @@ quat&	quat::invert() noexcept
 	return *this;
 }
 
-quat	quat::inverted() const noexcept
+quat	quat::conjugated() const noexcept
 {
-	return this->clone().invert();
+	return this->clone().conjugate();
 }
 
 quat&	quat::normalize() noexcept
@@ -123,22 +90,17 @@ quat	quat::product(const quat& a, const quat& b) noexcept
 	);
 }
 
-void	quat::angleToVec() noexcept
+vec3	quat::rotated(const vec3& rotateAround, quat rotationQuat) noexcept
 {
-	float angle = w;
-
-	w = std::cos(angle / 2.0f);
-	x *= std::sin(angle / 2.0f);
-	y *= std::sin(angle / 2.0f);
-	z *= std::sin(angle / 2.0f);
-}
-
-vec3	quat::rotate(const vec3& rotateAround, quat rotationQuat) noexcept
-{
-	rotationQuat.angleToVec();
-	rotationQuat.invert();
-	quat	axis(1.0f, rotateAround);
-	quat	resultQuat = quat::product(quat::product(rotationQuat, axis), rotationQuat);
+	quat	vectorQuat(0.0f, rotateAround.x, rotateAround.y, rotateAround.z);
+	rotationQuat.normalize();
+	quat	resultQuat = quat::product(quat::product(rotationQuat, vectorQuat), rotationQuat.conjugated());
 
 	return vec3(resultQuat.x, resultQuat.y, resultQuat.z);
+}
+
+std::ostream&	operator<<(std::ostream& os, const quat& q) noexcept
+{
+	os << "Quat(w: " << q.w << ", x: " << q.x << ", y: " << q.y << ", z: " << q.z << ")";
+	return os;
 }

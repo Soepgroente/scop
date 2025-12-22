@@ -10,8 +10,15 @@ class vec2
 {
 	public:
 	
-	float	x;
-	float	y;
+	union
+	{
+		float	data[2];
+		struct
+		{
+			float	x;
+			float	y;
+		};
+	};
 
 	vec2() : x(0.0f), y(0.0f) {}
 	vec2(float x, float y) : x(x), y(y) {}
@@ -30,7 +37,12 @@ class vec2
 
 	bool	operator==(const vec2& other) const noexcept { return x == other.x && y == other.y; }
 	bool	operator!=(const vec2& other) const noexcept { return !(*this == other); }
+	bool	operator<(const vec2& other) const noexcept;
+	bool	operator<=(const vec2& other) const noexcept { return *this < other || *this == other; }
+	bool	operator>(const vec2& other) const noexcept { return !(*this <= other); }
+	bool	operator>=(const vec2& other) const noexcept { return !(*this < other); }
 
+	float&	operator[](int index) noexcept { return data[index]; }
 	vec2	clone() const noexcept { return vec2(x, y); }
 	float	length() const noexcept { return std::sqrt(x * x + y * y); }
 	vec2&	normalize() noexcept;

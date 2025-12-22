@@ -1,16 +1,22 @@
 #pragma once
 
+#include "Vec3.hpp"
+
+#include <algorithm>
+#include <ostream>
+
 class vec3;
 
-class alignas(16) quat
+class quat
 {
 	public:
 
 	union
 	{
-		#ifdef USE_SIMD
-		__m128	data;
-		#endif
+		// #ifdef USE_SIMD
+		// __m128	simdData;
+		// #endif
+		float	data[4];
 		struct
 		{
 			float	w;
@@ -18,26 +24,35 @@ class alignas(16) quat
 			float	y;
 			float	z;
 		};
+		struct
+		{
+			float	scalar;
+			float	i;
+			float	j;
+			float	k;
+		};
 	};
 
-	quat() noexcept;
-	quat(const vec3& v3) noexcept;
-	quat(float w, float x, float y, float z) noexcept;
-	quat(float w, const vec3& v3) noexcept;
-	quat(const quat& other) noexcept;
-	quat&	operator=(const quat& other) noexcept;
+	quat() : w(1.0f), x(0.0f), y(0.0f), z(0.0f) {}
+	quat(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
+	quat(float angle, const vec3& v3);
+	quat(const quat& other) : w(other.w), x(other.x), y(other.y), z(other.z) {}
+	quat&	operator=(const quat& other);
 	~quat() = default;
 
+	float&			operator[](int index) noexcept { return data[index]; }
+	const float&	operator[](int index) const noexcept { return data[index]; }
+
 	quat	clone() const noexcept;
-	quat& invert() noexcept;
-	quat	inverted() const noexcept;
+	quat&	conjugate() noexcept;
+	quat	conjugated() const noexcept;
 
 	quat&	normalize() noexcept;
 	quat	normalized() const noexcept;
 	quat&	fastNormalize() noexcept;
 	quat	fastNormalized() const noexcept;
 
-	static vec3 rotate(const vec3& rotateAround, quat rotation) noexcept;
+	static vec3 rotated(const vec3& rotateAround, quat rotation) noexcept;
 	
 	private:
 	
@@ -45,3 +60,5 @@ class alignas(16) quat
 
 	static quat product(const quat& a, const quat& b) noexcept;
 };
+
+std::ostream&	operator<<(std::ostream& os, const quat& q) noexcept;

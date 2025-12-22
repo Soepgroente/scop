@@ -10,13 +10,13 @@ INCLUDES	=	-I./src \
 				-I./src/vectors \
 				-I./src/vulkan \
 
-SRCS	:=	main.cpp \
-			Scop.cpp \
+SRCS	:=	Scop.cpp \
 			vectors/Mat3.cpp \
 			vectors/Mat4.cpp \
 			vectors/Quat.cpp \
 			vectors/Vec2.cpp \
 			vectors/Vec3.cpp \
+			vectors/Vec4.cpp \
 			vectors/Vectors.cpp \
 			vulkan/Camera.cpp \
 			vulkan/KeyboardInput.cpp \
@@ -35,6 +35,17 @@ SRCS	:=	main.cpp \
 			vulkan/VulkanWindow.cpp \
 			utils.cpp \
 
+MAIN		:=	main.cpp
+
+TEST_EXEC	:=	testmath
+
+TEST_SRCS	:=	matrixTests.cpp \
+				quaternionTests.cpp \
+				testmain.cpp \
+				vectorTests.cpp \
+
+TEST_DIR	:=	./tests
+
 # ifeq ($(shell uname), Darwin)
 # 	CPUCORES := $(shell sysctl -n hw.ncpu)
 # else
@@ -43,9 +54,12 @@ SRCS	:=	main.cpp \
 # MAKEFLAGS	+= -j$(CPUCORES)
 # export MAKEFLAGS
 
-SRCDIR	:=	src
-OBJDIR	:=	$(SRCDIR)/obj
-OBJS	:=	$(addprefix $(OBJDIR)/,$(notdir $(SRCS:%.cpp=%.o)))
+SRCDIR		:=	src
+OBJDIR		:=	$(SRCDIR)/obj
+OBJS		:=	$(addprefix $(OBJDIR)/,$(notdir $(SRCS:%.cpp=%.o)))
+TEST_OBJS	:=	$(addprefix $(OBJDIR)/,$(notdir $(TEST_SRCS:%.cpp=%.o)))
+
+MAINOBJ		:=	$(OBJDIR)/$(notdir $(MAIN:%.cpp=%.o))
 
 UNAME_S	:=	$(shell uname -s)
 
@@ -71,6 +85,11 @@ CPPFLAGS = $(BASE_CPPFLAGS) $(RELEASE_FLAGS)
 
 all: $(SHADERS_COMPILED) $(NAME)
 
+test: $(TEST_EXEC)
+	./$(TEST_EXEC) || true
+
+retest: fclean test
+
 debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
 debug: fclean $(SHADERS_COMPILED) $(NAME)
 
@@ -85,8 +104,11 @@ rerun: fclean run
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
-$(NAME): $(OBJDIR) $(OBJS)
-	$(CC) $(CPPFLAGS) $(INCLUDES) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS) 
+$(NAME): $(OBJDIR) $(OBJS) $(MAINOBJ)
+	$(CC) $(CPPFLAGS) $(INCLUDES) -o $(NAME) $(MAINOBJ) $(OBJS) $(LDFLAGS) $(LIBS)
+
+$(TEST_EXEC): $(OBJDIR) $(TEST_OBJS) $(OBJS)
+	$(CC) $(CPPFLAGS) $(INCLUDES) -I$(TEST_DIR) -o $(TEST_EXEC) $(OBJS) $(TEST_OBJS)
 
 %.spv : %
 	$(GLSLC) $< -o $@
@@ -96,6 +118,9 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 $(OBJDIR)/%.o: $(SRCDIR)/*/%.cpp
 	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJDIR)/%.o: $(TEST_DIR)/%.cpp
+	$(CC) $(CPPFLAGS) $(INCLUDES) -I$(TEST_DIR) -c $< -o $@
 
 clean:
 	rm -rf $(OBJDIR)

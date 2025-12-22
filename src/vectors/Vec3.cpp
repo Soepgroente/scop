@@ -16,9 +16,25 @@ vec3&	vec3::operator=(const vec3& other)
 	return *this;
 }
 
-float	vec3::length() const noexcept
+bool	vec3::operator<(const vec3& other) const noexcept
 {
-	return std::sqrt(x * x + y * y + z * z);
+	if (x < other.x)
+	{
+		return true;
+	}
+	if (x > other.x)
+	{
+		return false;	
+	}
+	if (y < other.y)
+	{
+		return true;
+	}
+	if (y > other.y)
+	{
+		return false;
+	}
+	return z < other.z;
 }
 
 vec3&	vec3::normalize() noexcept
@@ -54,7 +70,7 @@ vec3&	vec3::rotate(const mat4& matrix, float angleRadians) noexcept
 
 vec3&	vec3::rotate(const quat& rotation) noexcept
 {
-	*this = quat::rotate(*this, rotation);
+	*this = quat::rotated(*this, rotation);
 	return *this;
 }
 

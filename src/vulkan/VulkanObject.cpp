@@ -63,9 +63,9 @@ mat4	TransformComponent::matrix4(const vec3& rotationCenter) const noexcept
 			0.0f,
 		},
 		{
-			scale. y * (c3 * s1 * s2 - c1 * s3),
+			scale.y * (c3 * s1 * s2 - c1 * s3),
 			scale.y * (c2 * c3),
-			scale. y * (c1 * c3 * s2 + s1 * s3),
+			scale.y * (c1 * c3 * s2 + s1 * s3),
 			0.0f,
 		},
 		{

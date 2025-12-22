@@ -23,7 +23,7 @@ class VulkanModel
 		vec3	pos;
 		vec3	color;
 		vec3	normal;
-		vec2	textureUv{};
+		vec2	textureUv;
 
 		static std::vector<VkVertexInputBindingDescription>		getBindingDescriptions();
 		static std::vector<VkVertexInputAttributeDescription>	getAttributeDescriptions();
@@ -35,6 +35,20 @@ class VulkanModel
 					normal == other.normal &&
 					textureUv == other.textureUv;
 		}
+		bool operator!=(const Vertex& other) const noexcept
+		{
+			return !(*this == other);
+		}
+		bool operator<(const Vertex& other) const noexcept
+		{
+			if (pos != other.pos)
+				return pos < other.pos;
+			if (color != other.color)
+				return color < other.color;
+			if (normal != other.normal)
+				return normal < other.normal;
+			return textureUv < other.textureUv;
+		}
 	};
 
 	struct Builder
@@ -42,7 +56,7 @@ class VulkanModel
 		std::vector<Vertex>		vertices{};
 		std::vector<uint32_t>	indices{};
 
-		void	loadModel(const std::string &filepath);
+		void	loadModel(const std::string& filepath);
 	};
 
 	VulkanModel() = delete;

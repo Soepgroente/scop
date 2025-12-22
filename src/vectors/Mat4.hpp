@@ -4,6 +4,7 @@
 #include <ostream>
 
 class vec3;
+class vec4;
 class mat3;
 
 class mat4
@@ -12,10 +13,10 @@ class mat4
 
 	mat4();
 	mat4(float diagonal);
-	mat4(const std::array<float, 4>& row0,
-		 const std::array<float, 4>& row1,
-		 const std::array<float, 4>& row2,
-		 const std::array<float, 4>& row3);
+	mat4(const vec4& col0,
+		 const vec4& col1,
+		 const vec4& col2,
+		 const vec4& col3);
 	mat4(std::initializer_list<std::initializer_list<float>> rows);
 	mat4(const mat3& matrix3x3);
 	~mat4() = default;
@@ -30,8 +31,10 @@ class mat4
 	mat4&	rotate(float angleRadians, const vec3& axis) noexcept;
 	mat4	rotated(float angleRadians, const vec3& axis) const noexcept;
 
-	float	data[4][4];
-	
+	float*			operator[](int row) noexcept { return data[row]; }
+	const float*	operator[](int row) const noexcept { return data[row]; }
+
+	float	data[4][4];	
 };
 
 std::ostream&	operator<<(std::ostream& os, const mat4& matrix);

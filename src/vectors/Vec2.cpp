@@ -12,6 +12,19 @@ vec2&	vec2::operator=(const vec2& other)
 	return *this;
 }
 
+bool	vec2::operator<(const vec2& other) const noexcept
+{
+	if (x < other.x)
+	{
+		return true;
+	}
+	if (x > other.x)
+	{
+		return false;	
+	}
+	return y < other.y;
+}
+
 vec2&	vec2::normalize() noexcept
 {
 	float len = length();

@@ -4,6 +4,7 @@
 #include "Scop.hpp"
 
 #include <iostream>
+#include <set>
 
 namespace ve {
 
@@ -187,8 +188,6 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 	vertices.clear();
 	indices.clear();
 
-	std::unordered_map<Vertex, uint32_t>	uniqueVertices{};
-
 	for (const ObjInfo& obj : objs)
 	{
 		for (const ObjComponent& component : obj.components)
@@ -222,18 +221,24 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 							vertex.normal = obj.normals[norm[ti]];
 						}
 						vertex.color = generateRandomColor();
-						if (uniqueVertices.count(vertex) == 0)
-						{
-							uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-							vertices.push_back(vertex);
-						}
-						indices.push_back(uniqueVertices[vertex]);
+						vertices.push_back(vertex);
+						indices.push_back(static_cast<uint32_t>(vertices.size() - 1));
+						// if (std::find(vertices.begin(), vertices.end(), vertex) == vertices.end())
+						// {
+						// 	vertices.push_back(vertex);
+						// 	indices.push_back(static_cast<uint32_t>(vertices.size() - 1));
+						// }
+						// else
+						// {
+						// 	indices.push_back(static_cast<uint32_t>(
+						// 		std::distance(vertices.begin(),
+						// 		std::find(vertices.begin(), vertices.end(), vertex))));
+						// }
 					}
 				}
 			}
 		}
 	}
-
 }
 
 }	// namespace ve

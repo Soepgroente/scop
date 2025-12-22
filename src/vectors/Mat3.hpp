@@ -20,6 +20,9 @@ class mat3
 	mat3	operator*(const mat3& other) const;
 	mat3&	operator*=(const mat3& other) {	*this = *this * other; return *this;}
 
+	float*			operator[](int row) noexcept { return elements[row]; }
+	const float*	operator[](int row) const noexcept { return elements[row]; }
+
 	union 
 	{
 		float e[9];

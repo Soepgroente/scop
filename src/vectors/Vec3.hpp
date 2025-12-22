@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Vectors.hpp"
 #include "Vec2.hpp"
 #include "Quat.hpp"
 
@@ -17,6 +16,7 @@ class vec3
 
 	union
 	{
+		float	data[3];
 		struct
 		{
 			float	x;
@@ -50,8 +50,16 @@ class vec3
 
 	bool	operator==(const vec3& other) const noexcept { return x == other.x && y == other.y && z == other.z; }
 	bool	operator!=(const vec3& other) const noexcept { return !(*this == other); }
+	bool	operator<(const vec3& other) const noexcept;
+	bool	operator<=(const vec3& other) const noexcept { return *this < other || *this == other; }
+	bool	operator>(const vec3& other) const noexcept { return !(*this <= other); }
+	bool	operator>=(const vec3& other) const noexcept { return !(*this < other); }
 
-	float	length() const noexcept;
+	float&			operator[](int index) noexcept { return data[index]; }
+	const float&	operator[](int index) const noexcept { return data[index]; }
+
+	float	length() const noexcept { return std::sqrt(x * x + y * y + z * z); }
+	float	lengthSquared() const noexcept { return x * x + y * y + z * z; }
 	vec3&	normalize() noexcept;
 	vec3	normalized() const noexcept { return this->clone().normalize(); }
 	vec3&	fastNormalize() noexcept;
@@ -66,7 +74,6 @@ class vec3
 	vec3&	invert() noexcept { *this *= -1.0f; return *this; }
 	vec3	inverted() const noexcept { return this->clone().invert(); }
 	vec3	reflect(const vec3& normal) const noexcept { return *this - 2.0f * vec3::dot(*this, normal) * normal; }
-	float	lengthSquared() const noexcept { return x * x + y * y + z * z; }
 
 	static float	angle(const vec3& a, const vec3& b) noexcept;
 	static float	angleRadians(const vec3& a, const vec3& b) noexcept { return vec3::angle(a, b); }

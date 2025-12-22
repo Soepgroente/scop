@@ -5,16 +5,16 @@ namespace ve {
 
 void	KeyboardInput::move(GLFWwindow* window, VulkanObject& object, float deltaTime)
 {
-	vec3	rotate{0.0f};
+	vec3	rotation{0.0f};
 
-	if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS) rotate.y += 1.0f;
-	if (glfwGetKey(window, keys.lookLeft) == GLFW_PRESS) rotate.y -= 1.0f;
-	if (glfwGetKey(window, keys.lookUp) == GLFW_PRESS) rotate.x -= 1.0f;
-	if (glfwGetKey(window, keys.lookDown) == GLFW_PRESS) rotate.x += 1.0f;
+	if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS) rotation.y += 1.0f;
+	if (glfwGetKey(window, keys.lookLeft) == GLFW_PRESS) rotation.y -= 1.0f;
+	if (glfwGetKey(window, keys.lookUp) == GLFW_PRESS) rotation.x -= 1.0f;
+	if (glfwGetKey(window, keys.lookDown) == GLFW_PRESS) rotation.x += 1.0f;
 
-	if (vec3::dot(rotate, rotate) > std::numeric_limits<float>::epsilon())
+	if (vec3::dot(rotation, rotation) > std::numeric_limits<float>::epsilon())
 	{
-		object.transform.rotation += rotate.normalize() * lookSpeed * deltaTime;
+		object.transform.rotation += rotation.normalize() * lookSpeed * deltaTime;
 	}
 
 	object.transform.rotation.x = std::clamp(object.transform.rotation.x, -half_pi() + 0.01f, half_pi() - 0.01f);
