@@ -31,6 +31,7 @@ class VulkanModel
 		bool operator==(const Vertex& other) const noexcept
 		{
 			return	pos == other.pos &&
+					color == other.color &&
 					normal == other.normal &&
 					textureUv == other.textureUv;
 		}

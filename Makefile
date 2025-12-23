@@ -129,6 +129,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+	rm -f $(TEST_EXEC)
 	rm -f $(SHADERS_COMPILED)
 
 re: fclean all

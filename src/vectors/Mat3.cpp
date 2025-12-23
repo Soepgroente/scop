@@ -16,6 +16,24 @@ mat3::mat3(const vec3& row0, const vec3& row1, const vec3& row2)
 	data[2][0] = row2.x; data[2][1] = row2.y; data[2][2] = row2.z;
 }
 
+mat3::mat3(std::initializer_list<std::initializer_list<float>> rows)
+{
+	int i = 0;
+	for (const std::initializer_list<float>& row : rows)
+	{
+		int j = 0;
+		for (float val : row)
+		{
+			if (i < 3 && j < 3)
+			{
+				data[j][i] = val;
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
 mat3	mat3::operator*(const mat3& other) const
 {
 	mat3	result(0.0f);
