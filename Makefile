@@ -91,13 +91,15 @@ test: $(TEST_EXEC)
 retest: fclean test
 
 debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
-debug: fclean $(SHADERS_COMPILED) $(NAME)
+debug: $(SHADERS_COMPILED) $(NAME)
 
 run: all
 	./$(NAME) ./models/teapot.obj
 
 rundebug: debug
 	./$(NAME) ./models/teapot.obj
+
+rerundebug: fclean rundebug
 
 rerun: fclean run
 

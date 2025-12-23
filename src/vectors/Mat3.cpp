@@ -1,40 +1,33 @@
 #include "Mat3.hpp"
+#include "Vec3.hpp"
 #include <cstring>
 
-mat3::mat3(float diagonal) : elements{{0.0f}, {0.0f}, {0.0f}}
+mat3::mat3(float diagonal) : data{{0.0f}, {0.0f}, {0.0f}}
 {
-	elements[0][0] = diagonal;
-	elements[1][1] = diagonal;
-	elements[2][2] = diagonal;
+	data[0][0] = diagonal;
+	data[1][1] = diagonal;
+	data[2][2] = diagonal;
 }
 
-mat3::mat3(float elements[9])
+mat3::mat3(const vec3& row0, const vec3& row1, const vec3& row2)
 {
-	std::memcpy(this->e, elements, 9 * sizeof(float));
-}
-
-mat3::mat3(std::array<float, 3> col0, std::array<float, 3> col1, std::array<float, 3> col2)
-{
-	for (int i = 0; i < 3; i++)
-	{
-		elements[i][0] = col0[i];
-		elements[i][1] = col1[i];
-		elements[i][2] = col2[i];
-	}
+	data[0][0] = row0.x; data[0][1] = row0.y; data[0][2] = row0.z;
+	data[1][0] = row1.x; data[1][1] = row1.y; data[1][2] = row1.z;
+	data[2][0] = row2.x; data[2][1] = row2.y; data[2][2] = row2.z;
 }
 
 mat3	mat3::operator*(const mat3& other) const
 {
 	mat3	result(0.0f);
 	
-	for (int row = 0; row < 3; row++)
+	for (int col = 0; col < 3; col++)
 	{
-		for (int col = 0; col < 3; col++)
+		for (int row = 0; row < 3; row++)
 		{
-			result.elements[row][col] = 
-				elements[row][0] * other.elements[0][col] +
-				elements[row][1] * other.elements[1][col] +
-				elements[row][2] * other.elements[2][col];
+			for (int k = 0; k < 3; k++)
+			{
+				result.data[row][col] += data[k][col] * other.data[row][k];
+			}
 		}
 	}
 	return result;
@@ -47,7 +40,7 @@ std::ostream&	operator<<(std::ostream& os, const mat3& matrix)
 		os << "[";
 		for (int col = 0; col < 3; col++)
 		{
-			os << matrix.elements[row][col] << "]";
+			os << matrix.data[row][col] << "]";
 			if (col < 2)
 			{
 				os << " [";

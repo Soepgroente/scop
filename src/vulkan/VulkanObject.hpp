@@ -34,16 +34,16 @@ struct ObjComponent
 	std::vector<std::vector<uint32_t>>	faceIndices;
 	std::vector<std::vector<uint32_t>>	textureIndices;
 	std::vector<std::vector<uint32_t>>	normalIndices;
-	std::string				matName;
+	std::string							matName;
 };
 
 struct ObjInfo
 {
 	std::string					name;
 	std::string					mtlFile;
-	std::vector<vec3>		vertices;
-	std::vector<vec2>		textureCoords;
-	std::vector<vec3>		normals;
+	std::vector<vec3>			vertices;
+	std::vector<vec2>			textureCoords;
+	std::vector<vec3>			normals;
 	std::vector<ObjComponent>	components;
 	std::map<std::string, Material>		materials;
 };

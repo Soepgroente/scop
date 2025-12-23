@@ -73,7 +73,6 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, std::vector<VulkanO
 {
 	vulkanPipeline->bind(frameInfo.commandBuffer);
 
-	// mat4	projectionView = info.camera.getProjectionMatrix() * info.camera.getViewMatrix();
 	vkCmdBindDescriptorSets(
 		frameInfo.commandBuffer,
 		VK_PIPELINE_BIND_POINT_GRAPHICS,

@@ -6,12 +6,12 @@ id_t	VulkanObject::currentID = 0;
 
 mat4	TransformComponent::matrix4() const noexcept
 {
-	const float c3 = std::cos(rotation.z);
-	const float s3 = std::sin(rotation.z);
-	const float c2 = std::cos(rotation.x);
-	const float s2 = std::sin(rotation.x);
 	const float c1 = std::cos(rotation.y);
 	const float s1 = std::sin(rotation.y);
+	const float c2 = std::cos(rotation.x);
+	const float s2 = std::sin(rotation.x);
+	const float c3 = std::cos(rotation.z);
+	const float s3 = std::sin(rotation.z);
 
 	return mat4(
 		{
@@ -47,12 +47,12 @@ mat4	TransformComponent::matrix4(const vec3& rotationCenter) const noexcept
 	mat4 translateBack = mat4(1.0f).translate(rotationCenter);
 	mat4 finalTranslate = mat4(1.0f).translate(translation);
 
-	const float c3 = std::cos(rotation.z);
-	const float s3 = std::sin(rotation.z);
-	const float c2 = std::cos(rotation.x);
-	const float s2 = std::sin(rotation.x);
 	const float c1 = std::cos(rotation.y);
 	const float s1 = std::sin(rotation.y);
+	const float c2 = std::cos(rotation.x);
+	const float s2 = std::sin(rotation.x);
+	const float c3 = std::cos(rotation.z);
+	const float s3 = std::sin(rotation.z);
 
 	mat4 rotScale = mat4
 	{
@@ -82,12 +82,12 @@ mat4	TransformComponent::matrix4(const vec3& rotationCenter) const noexcept
 
 mat3	TransformComponent::normalMatrix() const noexcept
 {
-	const float c3 = std::cos(rotation.z);
-	const float s3 = std::sin(rotation.z);
-	const float c2 = std::cos(rotation.x);
-	const float s2 = std::sin(rotation.x);
 	const float c1 = std::cos(rotation.y);
 	const float s1 = std::sin(rotation.y);
+	const float c2 = std::cos(rotation.x);
+	const float s2 = std::sin(rotation.x);
+	const float c3 = std::cos(rotation.z);
+	const float s3 = std::sin(rotation.z);
 	const vec3	invScale = 1.0f / scale;
 
 	return mat3

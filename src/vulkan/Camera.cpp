@@ -29,7 +29,7 @@ void	Camera::setPerspectiveProjection(float fovy, float aspect, float near, floa
 	};
 }
 
-void	Camera::setViewDirection(vec3 position, vec3 direction, vec3 up)
+void	Camera::setViewDirection(const vec3& position, const vec3& direction, const vec3& up)
 {
 	const vec3 w = direction.normalized();
 	const vec3 u = vec3::cross(w, up).normalized();
@@ -43,12 +43,12 @@ void	Camera::setViewDirection(vec3 position, vec3 direction, vec3 up)
 	};
 }
 
-void	Camera::setViewTarget(vec3 position, vec3 target, vec3 up)
+void	Camera::setViewTarget(const vec3& position, const vec3& target, const vec3& up)
 {
 	setViewDirection(position, target - position, up);
 }
 
-void	Camera::setViewYXZ(vec3 position, vec3 rotation)
+void	Camera::setViewYXZ(const vec3& position, const vec3& rotation)
 {
 	const float c3 = std::cos(rotation.z);
 	const float s3 = std::sin(rotation.z);

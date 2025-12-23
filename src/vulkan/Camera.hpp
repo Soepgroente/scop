@@ -11,9 +11,9 @@ class Camera
 	void	setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
 	void	setPerspectiveProjection(float fovy, float aspect, float near, float far);
 
-	void	setViewDirection(vec3 position, vec3 direction, vec3 up = vec3{0.0f, -1.0f, 0.0f});
-	void	setViewTarget(vec3 position, vec3 target, vec3 up = vec3{0.0f, -1.0f, 0.0f});
-	void	setViewYXZ(vec3 position, vec3 rotation);
+	void	setViewDirection(const vec3& position, const vec3& direction, const vec3& up = vec3{0.0f, -1.0f, 0.0f});
+	void	setViewTarget(const vec3& position, const vec3& target, const vec3& up = vec3{0.0f, -1.0f, 0.0f});
+	void	setViewYXZ(const vec3& position, const vec3& rotation);
 
 	const mat4&	getProjectionMatrix() const noexcept { return projectionMatrix; }
 	const mat4&	getViewMatrix() const noexcept { return viewMatrix; }

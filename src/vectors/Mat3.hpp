@@ -3,16 +3,17 @@
 #include <array>
 #include <ostream>
 
+class vec3;
+
 class mat3
 {
 	public:
 
 	mat3() = default;
 	mat3(float diagonal);
-	mat3(float elements[9]);
-	mat3(std::array<float, 3> col0,
-		 std::array<float, 3> col1,
-		 std::array<float, 3> col2);
+	mat3(const vec3& row0,
+		 const vec3& row1,
+		 const vec3& row2);
 	~mat3() = default;
 	mat3(const mat3& other) = default;
 	mat3&	operator=(const mat3& other) = default;
@@ -20,15 +21,12 @@ class mat3
 	mat3	operator*(const mat3& other) const;
 	mat3&	operator*=(const mat3& other) {	*this = *this * other; return *this;}
 
-	float*			operator[](int row) noexcept { return elements[row]; }
-	const float*	operator[](int row) const noexcept { return elements[row]; }
+	float*			operator[](int row) noexcept { return data[row]; }
+	const float*	operator[](int row) const noexcept { return data[row]; }
 
-	union 
-	{
-		float e[9];
-		float elements[3][3];
-	};
-	
+	float	data[3][3];
+
+	private:
 };
 
 std::ostream&	operator<<(std::ostream& os, const mat3& matrix);
