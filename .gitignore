@@ -3,6 +3,7 @@
 scop
 *.spv
 *.txt
+*.a
 
 notes.md
 testmath

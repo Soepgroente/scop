@@ -1,23 +1,19 @@
 NAME			:=	scop
 CC				:=	c++
-BASE_CPPFLAGS	=	-Wall -Wextra -Werror -std=c++20 -fPIC
-RELEASE_FLAGS	:=	-DNDEBUG -flto -O3 -march=native
+BASE_CPPFLAGS	:=	-Wall -Wextra -Werror -std=c++20 -fPIC
+RELEASE_FLAGS	:=	-DNDEBUG -flto -O3 -march=native -fno-math-errno
 DEBUG_FLAGS		:=	-g -fsanitize=address
 
-INCLUDES	=	-I./src \
+INCLUDES	:=	-I./src \
 				-I/opt/homebrew/include \
 				-I./src/include \
 				-I./src/vectors \
 				-I./src/vulkan \
 
+VECTOR_DIR	:=	src/vectors
+LIBS		:=	$(VECTOR_DIR)/customVectors.a
+
 SRCS	:=	Scop.cpp \
-			vectors/Mat3.cpp \
-			vectors/Mat4.cpp \
-			vectors/Quat.cpp \
-			vectors/Vec2.cpp \
-			vectors/Vec3.cpp \
-			vectors/Vec4.cpp \
-			vectors/Vectors.cpp \
 			vulkan/Camera.cpp \
 			vulkan/KeyboardInput.cpp \
 			vulkan/MouseInput.cpp \
@@ -37,28 +33,9 @@ SRCS	:=	Scop.cpp \
 
 MAIN		:=	main.cpp
 
-TEST_EXEC	:=	testmath
-
-TEST_SRCS	:=	matrixTests.cpp \
-				quaternionTests.cpp \
-				testmain.cpp \
-				vectorTests.cpp \
-
-TEST_DIR	:=	./tests
-
-# ifeq ($(shell uname), Darwin)
-# 	CPUCORES := $(shell sysctl -n hw.ncpu)
-# else
-# 	CPUCORES := $(shell nproc)
-# endif
-# MAKEFLAGS	+= -j$(CPUCORES)
-# export MAKEFLAGS
-
 SRCDIR		:=	src
 OBJDIR		:=	$(SRCDIR)/obj
 OBJS		:=	$(addprefix $(OBJDIR)/,$(notdir $(SRCS:%.cpp=%.o)))
-TEST_OBJS	:=	$(addprefix $(OBJDIR)/,$(notdir $(TEST_SRCS:%.cpp=%.o)))
-
 MAINOBJ		:=	$(OBJDIR)/$(notdir $(MAIN:%.cpp=%.o))
 
 UNAME_S	:=	$(shell uname -s)
@@ -70,14 +47,14 @@ GLSLC				:= $(shell which glslc)
 # source /opt/vulkan/current/setup-env.sh
 SHADERS_COMPILED	:= $(SHADERS_SRC:%=%.spv)
 
-LIBS		=	-L/opt/homebrew/lib -lglfw -framework Cocoa -framework IOKit -framework OpenGL
+LFLAGS		=	-L/opt/homebrew/lib -lglfw -framework Cocoa -framework IOKit -framework OpenGL
 RPATH_DIR	:=	/usr/local/lib
 LDFLAGS		:=	-lvulkan -lm -Wl,-rpath,$(RPATH_DIR)
 
 ifeq ($(UNAME_S), Linux)
 	ECHO_MESSAGE = "Linux"	
 	INCLUDES += -isystem $(USER)/.capt/root/usr/include
-	LIBS = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl `pkg-config --static --libs glfw3`
+	LFLAGS = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl `pkg-config --static --libs glfw3`
 	BASE_CPPFLAGS += `pkg-config --cflags glfw3`
 endif
 
@@ -85,13 +62,15 @@ CPPFLAGS = $(BASE_CPPFLAGS) $(RELEASE_FLAGS)
 
 all: $(SHADERS_COMPILED) $(NAME)
 
-test: $(TEST_EXEC)
-	./$(TEST_EXEC) || true
+test:
+	$(MAKE) -C $(VECTOR_DIR) test
 
 retest: fclean test
 
 debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
 debug: $(SHADERS_COMPILED) $(NAME)
+debug:
+	$(MAKE) -C $(VECTOR_DIR) debug
 
 run: all
 	./$(NAME) ./models/teapot.obj
@@ -106,11 +85,11 @@ rerun: fclean run
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
-$(NAME): $(OBJDIR) $(OBJS) $(MAINOBJ)
-	$(CC) $(CPPFLAGS) $(INCLUDES) -o $(NAME) $(MAINOBJ) $(OBJS) $(LDFLAGS) $(LIBS)
+$(LIBS):
+	$(MAKE) -C $(VECTOR_DIR)
 
-$(TEST_EXEC): $(OBJDIR) $(TEST_OBJS) $(OBJS)
-	$(CC) $(CPPFLAGS) $(INCLUDES) -I$(TEST_DIR) -o $(TEST_EXEC) $(OBJS) $(TEST_OBJS)
+$(NAME): $(LIBS) $(OBJDIR) $(OBJS) $(MAINOBJ)
+	$(CC) $(CPPFLAGS) $(INCLUDES) -o $(NAME) $(MAINOBJ) $(OBJS) $(LIBS) $(LDFLAGS) $(LFLAGS)
 
 %.spv : %
 	$(GLSLC) $< -o $@
@@ -121,17 +100,17 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 $(OBJDIR)/%.o: $(SRCDIR)/*/%.cpp
 	$(CC) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OBJDIR)/%.o: $(TEST_DIR)/%.cpp
-	$(CC) $(CPPFLAGS) $(INCLUDES) -I$(TEST_DIR) -c $< -o $@
-
 clean:
 	rm -rf $(OBJDIR)
+	$(MAKE) -C $(VECTOR_DIR) clean
 
 fclean: clean
+	$(MAKE) -C $(VECTOR_DIR) fclean
 	rm -f $(NAME)
-	rm -f $(TEST_EXEC)
 	rm -f $(SHADERS_COMPILED)
 
-re: fclean all
+re: fclean
+	$(MAKE) -C $(VECTOR_DIR) re
+	$(MAKE) all
 
 .PHONY: all debug clean fclean re run rundebug rerun

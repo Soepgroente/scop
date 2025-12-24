@@ -60,4 +60,4 @@ vec3	generateRandomGreyscale();
 vec3	generateSoftGreyscale();
 ImageInfo	loadImage(const std::string& imagePath);
 
-}
+}	// namespace ve
