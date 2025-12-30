@@ -30,7 +30,7 @@ class KeyboardInput
 
 	KeyMappings	keys{};
 
-	float	movementSpeed{3.0f};
+	float	movementSpeed{10.0f};
 	float	lookSpeed{1.0f};
 };
 

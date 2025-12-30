@@ -69,7 +69,7 @@ void	VulkanRenderSystem::createPipeline(VkRenderPass renderPass)
 	);
 }
 
-void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, std::vector<VulkanObject>& objects, bool rotateModel)
+void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, bool rotateModel)
 {
 	vulkanPipeline->bind(frameInfo.commandBuffer);
 
@@ -80,18 +80,21 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, std::vector<VulkanO
 		0, 1, &frameInfo.globalDescriptorSet,
 		0, nullptr
 	);
-	for (VulkanObject& object : objects)
+	for (std::pair<const id_t, VulkanObject>& kv : frameInfo.gameObjects)
 	{
+		VulkanObject& obj = kv.second;
+		if (obj.model == nullptr)
+		{
+			continue;
+		}
 		if (rotateModel == true)
 		{
-			object.transform.rotation.y = std::fmod(object.transform.rotation.y + 0.015f, two_pi());
-			// object.transform.rotation.x = mod(object.transform.rotation.x + 0.005f, two_pi<float>());
-			// object.transform.rotation.z = mod(object.transform.rotation.z + 0.002f, two_pi<float>());
+			obj.transform.rotation.y = std::fmod(obj.transform.rotation.y + 0.015f, two_pi());
 		}
 		SimplePushConstantData	push{};
 
-		push.modelMatrix = object.transform.matrix4();
-		push.normalMatrix = object.transform.normalMatrix();
+		push.modelMatrix = obj.transform.matrix4();
+		push.normalMatrix = obj.transform.normalMatrix();
 
 		vkCmdPushConstants(
 			frameInfo.commandBuffer,
@@ -101,8 +104,8 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, std::vector<VulkanO
 			sizeof(SimplePushConstantData),
 			&push
 		);
-		object.model->bind(frameInfo.commandBuffer);
-		object.model->draw(frameInfo.commandBuffer);
+		obj.model->bind(frameInfo.commandBuffer);
+		obj.model->draw(frameInfo.commandBuffer);
 	}
 }
 

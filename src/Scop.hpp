@@ -10,11 +10,6 @@
 #include "VulkanUtils.hpp"
 #include "VulkanWindow.hpp"
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
-
 #include <GLFW/glfw3.h>
 #include <array>
 #include <memory>
@@ -41,6 +36,7 @@ class Scop
 	private:
 
 	void	loadObjects();
+	void	loadDefaultObjects();
 
 	VulkanWindow	vulkanWindow{DEFAULT_HEIGHT, DEFAULT_WIDTH, "Scop"};
 	VulkanDevice	vulkanDevice{vulkanWindow};
@@ -48,7 +44,7 @@ class Scop
 	std::unique_ptr<VulkanDescriptorPool>	globalDescriptorPool{};
 
 	std::string					objModelPath;
-	std::vector<VulkanObject>	objects;
+	VulkanObject::Map			objects;
 	std::vector<VulkanTexture>	textures;
 	bool						rotateModel;
 };

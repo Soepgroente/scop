@@ -1,4 +1,5 @@
 #include "VulkanTexture.hpp"
+#include "stb_image.h"
 
 namespace ve {
 

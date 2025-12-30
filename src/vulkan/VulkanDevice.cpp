@@ -235,10 +235,10 @@ bool	VulkanDevice::isDeviceSuitable(VkPhysicalDevice device)
 	VkPhysicalDeviceFeatures	supportedFeatures;
 	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-	return indices.isComplete() && \
-			extensionsSupported && \
-			swapChainAdequate && \
-			supportedFeatures.samplerAnisotropy;
+	return indices.isComplete() == true && \
+			extensionsSupported == true && \
+			swapChainAdequate == true && \
+			supportedFeatures.samplerAnisotropy == true;
 }
 
 void	VulkanDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)

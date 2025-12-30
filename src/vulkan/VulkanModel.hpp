@@ -14,6 +14,12 @@
 
 namespace ve {
 
+struct	BoundingBox
+{
+	vec3	min;
+	vec3	max;
+};
+
 class VulkanModel
 {
 	public:
@@ -69,32 +75,36 @@ class VulkanModel
 	void	bind(VkCommandBuffer commandBuffer);
 	void	draw(VkCommandBuffer commandBuffer);
 	void	setName(const std::string& name) { this->name = name; }
+	void	setBoundingBox(const std::vector<Vertex>& vertices) noexcept;
 
-	vec3	getVertexCenter() const noexcept { return vertexCenter; }
-	vec3	getBoundingCenter() const noexcept { return boundingCenter; }
+	const vec3&	getVertexCenter() const noexcept { return vertexCenter; }
+	const vec3&	getBoundingCenter() const noexcept { return boundingCenter; }
+	const BoundingBox&	getBoundingBox() const noexcept { return boundingBox; }
 	static std::unique_ptr<VulkanModel>	createModelFromFile(VulkanDevice& device, const std::string& filepath);
-
+	
 	private:
 	
 	std::string			name;
 	bool				hasIndexBuffer = false;
-
+	
 	VulkanDevice&		vulkanDevice;
 	uint32_t			vertexCount;
-
+	
 	std::unique_ptr<VulkanBuffer>	vertexBuffer;
 	std::unique_ptr<VulkanBuffer>	indexBuffer;
-
+	
 	uint32_t			indexCount;
-
+	
 	vec3			vertexCenter;
 	vec3			boundingCenter;
-
+	BoundingBox		boundingBox;
+	
+	void	setObjectCenter() noexcept;
+	
 	void	createVertexBuffers(const std::vector<Vertex>& vertices);
 	void	createIndexBuffers(const std::vector<uint32_t>& indices);
-
+	
 	static vec3	calculateVertexCenter(const std::vector<Vertex>& vertices) noexcept;
-	static vec3	calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept;
 };
 
 }	// namespace ve

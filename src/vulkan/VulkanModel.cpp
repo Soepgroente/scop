@@ -131,30 +131,25 @@ std::vector<VkVertexInputAttributeDescription>	VulkanModel::Vertex::getAttribute
 	return attributeDescriptions;
 }
 
-vec3	VulkanModel::calculateBoundingCenter(const std::vector<Vertex>& vertices) noexcept
+void	VulkanModel::setBoundingBox(const std::vector<Vertex>& vertices) noexcept
 {
-	float	xMin, xMax,
-			yMin, yMax,
-			zMin, zMax;
-
-	xMin = std::min_element(vertices.begin(), vertices.end(),
+	boundingBox.min.x = std::min_element(vertices.begin(), vertices.end(),
 		[](const Vertex& a, const Vertex& b) { return a.pos.x < b.pos.x; })->pos.x;
-	xMax = std::max_element(vertices.begin(), vertices.end(),
+	boundingBox.max.x = std::max_element(vertices.begin(), vertices.end(),
 		[](const Vertex& a, const Vertex& b) { return a.pos.x < b.pos.x; })->pos.x;
-	yMin = std::min_element(vertices.begin(), vertices.end(),
+	boundingBox.min.y = std::min_element(vertices.begin(), vertices.end(),
 		[](const Vertex& a, const Vertex& b) { return a.pos.y < b.pos.y; })->pos.y;
-	yMax = std::max_element(vertices.begin(), vertices.end(),
+	boundingBox.max.y = std::max_element(vertices.begin(), vertices.end(),
 		[](const Vertex& a, const Vertex& b) { return a.pos.y < b.pos.y; })->pos.y;
-	zMin = std::min_element(vertices.begin(), vertices.end(),
+	boundingBox.min.z = std::min_element(vertices.begin(), vertices.end(),
 		[](const Vertex& a, const Vertex& b) { return a.pos.z < b.pos.z; })->pos.z;
-	zMax = std::max_element(vertices.begin(), vertices.end(),
+	boundingBox.max.z = std::max_element(vertices.begin(), vertices.end(),
 		[](const Vertex& a, const Vertex& b) { return a.pos.z < b.pos.z; })->pos.z;
+}
 
-	return vec3 {
-		(xMin + xMax) / 2.0f,
-		(yMin + yMax) / 2.0f,
-		(zMin + zMax) / 2.0f
-	};
+void	VulkanModel::setObjectCenter() noexcept
+{
+	boundingCenter = (boundingBox.min + boundingBox.max) / 2.0f;
 }
 
 vec3	VulkanModel::calculateVertexCenter(const std::vector<Vertex>& vertices) noexcept
@@ -172,18 +167,29 @@ vec3	VulkanModel::calculateVertexCenter(const std::vector<Vertex>& vertices) noe
 std::unique_ptr<VulkanModel>	VulkanModel::createModelFromFile(VulkanDevice& device, const std::string& filepath)
 {
 	Builder	builder{};
+
 	builder.loadModel(filepath);
+
+	if (builder.vertices.size() < 10)
+	{
+		for (VulkanModel::Vertex& vertex : builder.vertices)
+		{
+			vertex.color = {0.6f};
+		}
+	}
 
 	std::unique_ptr<VulkanModel>	model = std::make_unique<VulkanModel>(device, builder);
 
 	model->vertexCenter = model->calculateVertexCenter(builder.vertices);
-	model->boundingCenter = model->calculateBoundingCenter(builder.vertices);
+	model->setBoundingBox(builder.vertices);
+	model->setObjectCenter();
 	return model;
 }
 
 void	VulkanModel::Builder::loadModel(const std::string &filepath)
 {
 	std::vector<ObjInfo>		objs = parseOBJFile(filepath);
+	std::unordered_map<Vertex, uint32_t>	uniqueVertices{};
 
 	vertices.clear();
 	indices.clear();
@@ -221,17 +227,12 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 							vertex.normal = obj.normals[norm[ti]];
 						}
 						vertex.color = generateRandomColor();
-						if (std::find(vertices.begin(), vertices.end(), vertex) == vertices.end())
+						if (uniqueVertices.count(vertex) == 0)
 						{
+							uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
 							vertices.push_back(vertex);
-							indices.push_back(static_cast<uint32_t>(vertices.size() - 1));
 						}
-						else
-						{
-							indices.push_back(static_cast<uint32_t>(
-								std::distance(vertices.begin(),
-								std::find(vertices.begin(), vertices.end(), vertex))));
-						}
+						indices.push_back(uniqueVertices[vertex]);
 					}
 				}
 			}

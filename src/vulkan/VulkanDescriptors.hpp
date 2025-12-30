@@ -87,6 +87,7 @@ class VulkanDescriptorPool
 	void	resetPool();
 
 	private:
+
 	VulkanDevice&		vulkanDevice;
 	VkDescriptorPool	descriptorPool;
 

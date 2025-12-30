@@ -5,6 +5,8 @@
 
 #include <memory>
 #include <map>
+#include <string>
+#include <unordered_map>
 
 namespace ve {
 
@@ -44,6 +46,7 @@ struct ObjInfo
 	std::vector<vec3>			vertices;
 	std::vector<vec2>			textureCoords;
 	std::vector<vec3>			normals;
+	std::vector<vec3>			colors;
 	std::vector<ObjComponent>	components;
 	std::map<std::string, Material>		materials;
 };
@@ -64,6 +67,7 @@ class VulkanObject
 	public:
 
 	using id_t = uint32_t;
+	using Map = std::unordered_map<id_t, VulkanObject>;
 
 	VulkanObject() = delete;
 	~VulkanObject();
