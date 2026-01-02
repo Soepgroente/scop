@@ -6,8 +6,6 @@
 
 namespace ve {
 
-// *************** Descriptor Set Layout Builder *********************
-
 VulkanDescriptorSetLayout::Builder&	VulkanDescriptorSetLayout::Builder::addBinding(
 	uint32_t binding,
 	VkDescriptorType descriptorType,
@@ -29,8 +27,6 @@ std::unique_ptr<VulkanDescriptorSetLayout>	VulkanDescriptorSetLayout::Builder::b
 {
 	return std::make_unique<VulkanDescriptorSetLayout>(vulkanDevice, bindings);
 }
-
-// *************** Descriptor Set Layout *********************
 
 VulkanDescriptorSetLayout::VulkanDescriptorSetLayout(
 	VulkanDevice& vulkanDevice, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
@@ -62,8 +58,6 @@ VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout()
 	vkDestroyDescriptorSetLayout(vulkanDevice.device(), descriptorSetLayout, nullptr);
 }
 
-// *************** Descriptor Pool Builder *********************
-
 VulkanDescriptorPool::Builder&	VulkanDescriptorPool::Builder::addPoolSize(VkDescriptorType descriptorType, uint32_t count)
 {
 	poolSizes.push_back({descriptorType, count});
@@ -87,24 +81,22 @@ std::unique_ptr<VulkanDescriptorPool>	VulkanDescriptorPool::Builder::build() con
 	return std::make_unique<VulkanDescriptorPool>(vulkanDevice, maxSets, poolFlags, poolSizes);
 }
 
-// *************** Descriptor Pool *********************
-
 VulkanDescriptorPool::VulkanDescriptorPool(
 	VulkanDevice& vulkanDevice,
 	uint32_t maxSets,
 	VkDescriptorPoolCreateFlags poolFlags,
-	const std::vector<VkDescriptorPoolSize> &poolSizes)
+	const std::vector<VkDescriptorPoolSize>& poolSizes)
 	: vulkanDevice{vulkanDevice}
 {
-	VkDescriptorPoolCreateInfo descriptorPoolInfo{};
+	VkDescriptorPoolCreateInfo poolInfo{};
 
-	descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	descriptorPoolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-	descriptorPoolInfo.pPoolSizes = poolSizes.data();
-	descriptorPoolInfo.maxSets = maxSets;
-	descriptorPoolInfo.flags = poolFlags;
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+	poolInfo.pPoolSizes = poolSizes.data();
+	poolInfo.maxSets = maxSets;
+	poolInfo.flags = poolFlags;
 
-	if (vkCreateDescriptorPool(vulkanDevice.device(), &descriptorPoolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
+	if (vkCreateDescriptorPool(vulkanDevice.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create descriptor pool!");
 	}
@@ -143,8 +135,6 @@ void	VulkanDescriptorPool::resetPool()
 {
 	vkResetDescriptorPool(vulkanDevice.device(), descriptorPool, 0);
 }
-
-// *************** Descriptor Writer *********************
 
 VulkanDescriptorWriter::VulkanDescriptorWriter(VulkanDescriptorSetLayout &setLayout, VulkanDescriptorPool &pool)
 	: setLayout{setLayout}, pool{pool}

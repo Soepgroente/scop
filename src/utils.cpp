@@ -1,5 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-
 #include "Scop.hpp"
 #include <random>
 #include <chrono>

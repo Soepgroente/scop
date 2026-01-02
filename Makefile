@@ -14,6 +14,7 @@ VECTOR_DIR	:=	src/vectors
 LIBS		:=	$(VECTOR_DIR)/customVectors.a
 
 SRCS	:=	Scop.cpp \
+			include/stb_image.cpp \
 			vulkan/Camera.cpp \
 			vulkan/KeyboardInput.cpp \
 			vulkan/MouseInput.cpp \
@@ -104,13 +105,14 @@ clean:
 	rm -rf $(OBJDIR)
 	$(MAKE) -C $(VECTOR_DIR) clean
 
-fclean: clean
+fclean:
 	$(MAKE) -C $(VECTOR_DIR) fclean
+	rm -rf $(OBJDIR)
 	rm -f $(NAME)
 	rm -f $(SHADERS_COMPILED)
 
 re: fclean
-	$(MAKE) -C $(VECTOR_DIR) re
+	$(MAKE) -C $(VECTOR_DIR)
 	$(MAKE) all
 
 .PHONY: all debug clean fclean re run rundebug rerun

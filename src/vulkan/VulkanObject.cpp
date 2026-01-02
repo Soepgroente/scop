@@ -1,4 +1,5 @@
 #include "VulkanObject.hpp"
+#include "stb_image.h"
 
 namespace ve {
 

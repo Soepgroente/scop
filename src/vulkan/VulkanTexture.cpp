@@ -1,5 +1,4 @@
 #include "VulkanTexture.hpp"
-#include "stb_image.h"
 
 namespace ve {
 
@@ -110,7 +109,7 @@ void	VulkanTexture::createTextureImage()
 	vkMapMemory(device.device(), stagingBufferMemory, 0, imageSize, 0, &data);
 	memcpy(data, imageInfo.imageData, static_cast<size_t>(imageSize));
 	vkUnmapMemory(device.device(), stagingBufferMemory);
-	stbi_image_free((const_cast<unsigned char*>(imageInfo.imageData)));
+	free((const_cast<unsigned char*>(imageInfo.imageData)));
 	imageInfo.imageData = nullptr;
 
 	device.createImageWithInfo(

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VulkanObject.hpp"
+#include "stb_image.h"
 
 namespace ve {
 
@@ -23,6 +24,8 @@ class VulkanTexture
 	void	createTextureSampler();
 
 	const ImageInfo&	getImageInfo() const noexcept { return imageInfo; }
+	VkImageView			getImageView() const noexcept { return textureImageView; }
+	VkSampler			getSampler() const noexcept { return textureSampler; }
 
 	private:
 
