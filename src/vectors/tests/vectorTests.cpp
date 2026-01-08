@@ -78,6 +78,10 @@ int	runVectorTests()
 {
 	int	failures = 0;
 
+	std::cout << "Vector data size tests:\n";
+	failures += compareSizes(sizeof(vec2), sizeof(glm::vec2));
+	failures += compareSizes(sizeof(vec3), sizeof(glm::vec3));
+	failures += compareSizes(sizeof(vec4), sizeof(glm::vec4));
 	failures += testVectorLength();
 	failures += testVectorNormalize();
 

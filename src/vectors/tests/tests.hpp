@@ -19,6 +19,7 @@
 int	runMatrixTests();
 int	runVectorTests();
 int	runQuaternionTests();
+int	compareSizes(size_t a, size_t b);
 
 template<typename T>
 void	print3x3(const T& matrix)

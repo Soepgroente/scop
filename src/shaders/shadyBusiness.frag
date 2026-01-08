@@ -1,9 +1,9 @@
 #version 450
 
 layout(location = 0) in vec3 fragColor;
-layout(location = 1) in vec2 fragTexCoord;
-layout(location = 2) in vec3 fragPosWorld;
-layout(location = 3) in vec3 fragNormalWorld;
+layout(location = 1) in vec3 fragPosWorld;
+layout(location = 2) in vec3 fragNormalWorld;
+layout(location = 3) in vec2 fragTexCoord;
 
 layout(location = 0) out vec4 outColor;
 
@@ -25,13 +25,15 @@ layout(push_constant) uniform PushConstants
 
 void main()
 {
-	vec3 directionToLight = ubo.lightPosition - fragPosWorld;
-	float attenuation = 1.0 / dot(directionToLight, directionToLight);
+	// outColor = vec4(fragTexCoord, 0.0, 1.0);
+	outColor = texture(texSampler, fragTexCoord * 2.0);
+	// vec3 directionToLight = ubo.lightPosition - fragPosWorld;
+	// float attenuation = 1.0 / dot(directionToLight, directionToLight);
 
-	vec3 lightColor = ubo.lightColor.xyz * ubo.lightColor.w * attenuation;
-	vec3 ambientlight = ubo.ambientLightColor.xyz * ubo.ambientLightColor.w;
-	vec3 diffuseLight = lightColor * max(dot(normalize(fragNormalWorld), normalize(directionToLight)), 0.0);
+	// vec3 lightColor = ubo.lightColor.xyz * ubo.lightColor.w * attenuation;
+	// vec3 ambientlight = ubo.ambientLightColor.xyz * ubo.ambientLightColor. w;
+	// vec3 diffuseLight = lightColor * max(dot(normalize(fragNormalWorld), normalize(directionToLight)), 0.0);
 
-	// outColor = vec4((diffuseLight + ambientlight) * fragColor, 1.0);
-	outColor = texture(texSampler, fragTexCoord);
+	// vec3 textureColor = texture(texSampler, fragTexCoord).rgb;
+	// outColor = vec4((diffuseLight + ambientlight) * textureColor, 1.0);
 }

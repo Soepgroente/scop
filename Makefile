@@ -66,6 +66,9 @@ all: $(SHADERS_COMPILED) $(NAME)
 test:
 	$(MAKE) -C $(VECTOR_DIR) test
 
+runtest: 
+	$(MAKE) -C $(VECTOR_DIR) runtest
+
 retest: fclean test
 
 debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)

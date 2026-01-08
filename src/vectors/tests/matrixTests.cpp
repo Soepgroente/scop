@@ -379,7 +379,7 @@ static int	mat3MultiplicationTests()
 
 int	mat3Tests()
 {
-	std::cout << "3x3:\n";
+	std::cout << "[3x3] ";
 
 	int 	failures = 0;
 
@@ -390,15 +390,13 @@ int	mat3Tests()
 
 int	mat4Tests()
 {
-	std::cout << "4x4:\n";
+	std::cout << "[4x4] ";
 
 	int 	failures = 0;
 	
 	failures += mat4InitializerTests();
 	failures += mat4MultiplicationTests();
 	failures += mat4TranslationTests();
-	// std::cout << "\nMatrix rotation:\n";
-	// failures += mat4RotationTests();
 	return failures;
 }
 
@@ -406,6 +404,9 @@ int	runMatrixTests()
 {
 	int	failures = 0;
 
+	std::cout << "Matrix data size tests:\n";
+	failures += compareSizes(sizeof(mat3), sizeof(glm::mat3));
+	failures += compareSizes(sizeof(mat4), sizeof(glm::mat4));
 	failures += mat3Tests();
 	failures += mat4Tests();
 	return failures;

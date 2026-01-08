@@ -23,6 +23,7 @@ TEST_SRCS	:=	matrixTests.cpp \
 				quaternionTests.cpp \
 				testmain.cpp \
 				vectorTests.cpp \
+				utils.cpp \
 
 TEST_DIR	:=	./tests
 OBJDIR		:=	obj
@@ -34,6 +35,9 @@ CPPFLAGS	=	$(BASE_CPPFLAGS) $(RELEASE_FLAGS)
 all: $(NAME)
 
 test: $(TEST_EXEC)
+
+runtest: $(TEST_EXEC)
+	./$(TEST_EXEC)
 
 debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
 debug: all

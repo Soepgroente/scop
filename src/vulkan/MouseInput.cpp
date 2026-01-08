@@ -2,7 +2,11 @@
 
 namespace ve {
 
-void	MouseInput::move(GLFWwindow* window, VulkanObject& object, float deltaTime)
+MouseInput::MouseInput(GLFWwindow* window) : window{window}
+{
+}
+
+void	MouseInput::move(VulkanObject& object, float deltaTime)
 {
 	MousePos	currentMousePos;
 	MousePos	mouseDelta;

@@ -11,27 +11,42 @@ class KeyboardInput
 {
 	public:
 
+	KeyboardInput() = delete;
+	~KeyboardInput() = default;
+	KeyboardInput(GLFWwindow* window);
+	KeyboardInput(const KeyboardInput&) = delete;
+	KeyboardInput& operator=(const KeyboardInput&) = delete;
+
 	struct KeyMappings
 	{
-		int moveLeft = GLFW_KEY_A;
-		int moveRight = GLFW_KEY_D;
-		int moveForward = GLFW_KEY_W;
-		int moveBackward = GLFW_KEY_S;
-		int moveUp = GLFW_KEY_E;
-		int moveDown = GLFW_KEY_Q;
-		int lookLeft = GLFW_KEY_LEFT;
-		int lookRight = GLFW_KEY_RIGHT;
-		int lookUp = GLFW_KEY_UP;
-		int lookDown = GLFW_KEY_DOWN;
-		int rotate = GLFW_KEY_KP_ADD;
+		int moveLeft;
+		int moveRight;
+		int moveForward;
+		int moveBackward;
+		int moveUp;
+		int moveDown;
+		int lookLeft;
+		int lookRight;
+		int lookUp;
+		int lookDown;
+		int rotate;
+		int	toggleTexture;
 	};
 
-	void	move(GLFWwindow* window, VulkanObject& object, float deltaTime);
+	bool	shouldRotate(size_t& lastPressed, size_t frameCount);
 
-	KeyMappings	keys{};
+	void	move(VulkanObject& object, float deltaTime);
+	void	registerKeyPresses();
+	void	resetRegisteredKeys();
+
+	static KeyMappings	keys;
 
 	float	movementSpeed{10.0f};
 	float	lookSpeed{1.0f};
+
+	private:
+
+	GLFWwindow*	window;
 };
 
 } // namespace ve

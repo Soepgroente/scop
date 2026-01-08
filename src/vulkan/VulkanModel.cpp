@@ -131,7 +131,10 @@ std::vector<VkVertexInputAttributeDescription>	VulkanModel::Vertex::getAttribute
 		VkVertexInputAttributeDescription{1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)}
 	);
 	attributeDescriptions.push_back(
-		VkVertexInputAttributeDescription{2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, textureUv)}
+		VkVertexInputAttributeDescription{2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)}
+	);
+	attributeDescriptions.push_back(
+		VkVertexInputAttributeDescription{3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, textureUv)}
 	);
 	return attributeDescriptions;
 }
@@ -227,6 +230,25 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 						{
 							vertex.textureUv = obj.textureCoords[tex[ti]];
 						}
+						else
+						{
+							vec3 absPos = vec3{std::abs(vertex.pos.x), std::abs(vertex.pos.y), std::abs(vertex.pos.z)};
+							vec3 norm = vertex.normal;
+							
+							if (std::abs(norm.x) > 0.5f)
+							{
+								vertex.textureUv = vec2{(vertex.pos.z + 1.0f) * 0.5f, (vertex.pos. y + 1.0f) * 0.5f};
+							}
+							else if (std::abs(norm.y) > 0.5f)
+							{
+								vertex.textureUv = vec2{(vertex.pos.x + 1.0f) * 0.5f, (vertex.pos.z + 1.0f) * 0.5f};
+							}
+							else
+							{
+								vertex.textureUv = vec2{(vertex.pos.x + 1.0f) * 0.5f, (vertex.pos.y + 1.0f) * 0.5f};
+							}
+							// std::cout << "Generated UV: " << vertex.textureUv.x << ", " << vertex.textureUv.y << std::endl;
+						}
 						if (norm.size() > ti)
 						{
 							vertex.normal = obj.normals[norm[ti]];
@@ -243,6 +265,22 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 			}
 		}
 	}
+	// vertices = { 
+	// 	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0, 0, 1},{0.0f, 0.0f}},
+	// 	{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0, 0, 1},{1.0f, 0.0f}},
+	// 	{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0, 0, 1},{1.0f, 1.0f}},
+	// 	{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0, 0, 1},{0.0f, 1.0f}},
+
+	// 	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0, 0, 1},{0.0f, 0.0f}},
+	// 	{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0, 0, 1},{1.0f, 0.0f}},
+	// 	{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0, 0, 1},{1.0f, 1.0f}},
+	// 	{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0, 0, 1},{0.0f, 1.0f}}
+	// };
+
+	// indices = {
+	// 	0, 1, 2, 2, 3, 0,
+	// 	4, 5, 6, 6, 7, 4
+	// };
 }
 
 }	// namespace ve

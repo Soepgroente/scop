@@ -16,10 +16,17 @@ class	MouseInput
 {
 	public:
 
-	void	move(GLFWwindow* window, VulkanObject& object, float deltaTime);
+	MouseInput() = delete;
+	~MouseInput() = default;
+	MouseInput(GLFWwindow* window);
+	MouseInput(const MouseInput&) = delete;
+	MouseInput& operator=(const MouseInput&) = delete;
+
+	void	move(VulkanObject& object, float deltaTime);
 
 	private:
 
+	GLFWwindow*	window;
 	float		sensitivity{0.02f};
 	MousePos	lastMousePos{0.0, 0.0};
 	bool		firstMouseFrame{true};

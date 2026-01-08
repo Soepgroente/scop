@@ -29,7 +29,7 @@ Scop::Scop(std::string objPath) : objModelPath(objPath)
 		std::cerr << "More than one object is out of... Scop... for this project. Get it? Scop. 🥁" << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-	loadDefaultObjects();
+	// loadDefaultObjects();
 }
 
 Scop::~Scop()
@@ -85,8 +85,8 @@ void	Scop::run()
 	std::chrono::high_resolution_clock::time_point	currentTime, newTime;
 	VkCommandBuffer	commandBuffer = nullptr;
 	VulkanObject	viewerObject = VulkanObject::createVulkanObject();
-	KeyboardInput	keyboardInput{};
-	MouseInput		mouseInput{};
+	KeyboardInput	keyboardInput(vulkanWindow.getGLFWwindow());
+	MouseInput		mouseInput(vulkanWindow.getGLFWwindow());
 	size_t			frameCount = 0;
 	size_t			lastPressed = 0;
 
@@ -99,14 +99,10 @@ void	Scop::run()
 		newTime = std::chrono::high_resolution_clock::now();
 		elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 		currentTime = newTime;
-
-		if (frameCount - lastPressed > 20 && glfwGetKey(vulkanWindow.getGLFWwindow(), GLFW_KEY_KP_ADD) == GLFW_PRESS)
-		{
-			rotateModel = !rotateModel;
-			lastPressed = frameCount;
-		}
-		keyboardInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
-		mouseInput.move(vulkanWindow.getGLFWwindow(), viewerObject, elapsedTime);
+		keyboardInput.registerKeyPresses();
+		rotateModel = keyboardInput.shouldRotate(lastPressed, frameCount);
+		keyboardInput.move(viewerObject, elapsedTime);
+		mouseInput.move(viewerObject, elapsedTime);
 		camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 		aspectRatio = vulkanRenderer.getAspectRatio();
 		camera.setPerspectiveProjection(radians(50.0f), aspectRatio, 0.1f, 1000.0f);
@@ -152,8 +148,6 @@ void	Scop::loadDefaultObjects()
 	floor.transform.scale = {10.0f, 1.0f, 10.0f};
 	floor.color = {0.3f, 0.3f, 0.3f};
 	objects.emplace(floor.getID(), std::move(floor));
-
-	textures.emplace_back("textures/defaultTex.jpg", vulkanDevice);
 }
 
 void	Scop::loadObjects()

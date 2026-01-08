@@ -83,6 +83,7 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, bool rotateModel)
 	for (std::pair<const id_t, VulkanObject>& kv : frameInfo.gameObjects)
 	{
 		VulkanObject& obj = kv.second;
+
 		if (obj.model == nullptr)
 		{
 			continue;
@@ -93,7 +94,7 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, bool rotateModel)
 		}
 		SimplePushConstantData	push{};
 
-		push.modelMatrix = obj.transform.matrix4();
+		push.modelMatrix = obj.transform.matrix4(obj.model->getBoundingCenter());
 		push.normalMatrix = obj.transform.normalMatrix();
 
 		vkCmdPushConstants(

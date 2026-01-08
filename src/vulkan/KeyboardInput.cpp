@@ -3,7 +3,23 @@
 
 namespace ve {
 
-void	KeyboardInput::move(GLFWwindow* window, VulkanObject& object, float deltaTime)
+KeyboardInput::KeyMappings	KeyboardInput::keys{};
+
+KeyboardInput::KeyboardInput(GLFWwindow* window) : window{window}
+{
+}
+
+bool	KeyboardInput::shouldRotate(size_t& lastPressed, size_t frameCount)
+{
+	if (frameCount - lastPressed > 20 && glfwGetKey(window, keys.rotate) == GLFW_PRESS)
+	{
+		lastPressed = frameCount;
+		return true;
+	}
+	return false;
+}
+
+void	KeyboardInput::move(VulkanObject& object, float deltaTime)
 {
 	vec3	rotation{0.0f};
 
@@ -39,6 +55,27 @@ void	KeyboardInput::move(GLFWwindow* window, VulkanObject& object, float deltaTi
 	{
 		object.transform.translation += moveDir.normalize() * movementSpeed * deltaTime;
 	}
+}
+
+void	KeyboardInput::registerKeyPresses()
+{
+	keys.moveLeft = glfwGetKey(window, keys.moveLeft);
+	keys.moveRight = glfwGetKey(window, keys.moveRight);
+	keys.moveForward = glfwGetKey(window, keys.moveForward);
+	keys.moveBackward = glfwGetKey(window, keys.moveBackward);
+	keys.moveUp = glfwGetKey(window, keys.moveUp);
+	keys.moveDown = glfwGetKey(window, keys.moveDown);
+	keys.lookLeft = glfwGetKey(window, keys.lookLeft);
+	keys.lookRight = glfwGetKey(window, keys.lookRight);
+	keys.lookUp = glfwGetKey(window, keys.lookUp);
+	keys.lookDown = glfwGetKey(window, keys.lookDown);
+	keys.rotate = glfwGetKey(window, keys.rotate);
+	keys.toggleTexture = glfwGetKey(window, keys.toggleTexture);
+}
+
+void	KeyboardInput::resetRegisteredKeys()
+{
+	std::memset(&keys, GLFW_RELEASE, sizeof(keys));
 }
 
 } // namespace ve
