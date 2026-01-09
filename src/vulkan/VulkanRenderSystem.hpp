@@ -25,7 +25,7 @@ class VulkanRenderSystem
 	VulkanRenderSystem(const VulkanRenderSystem&) = delete;
 	VulkanRenderSystem& operator=(const VulkanRenderSystem&) = delete;
 	
-	void	renderObjects(FrameInfo& frameInfo, bool rotateModel);
+	void	renderObjects(FrameInfo& frameInfo);
 
 	private:
 

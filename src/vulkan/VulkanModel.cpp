@@ -253,7 +253,7 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 						{
 							vertex.normal = obj.normals[norm[ti]];
 						}
-						vertex.color = generateRandomColor();
+						vertex.color = generateRandomGreyscale();
 						if (uniqueVertices.count(vertex) == 0)
 						{
 							uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
@@ -265,22 +265,6 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 			}
 		}
 	}
-	// vertices = { 
-	// 	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0, 0, 1},{0.0f, 0.0f}},
-	// 	{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0, 0, 1},{1.0f, 0.0f}},
-	// 	{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0, 0, 1},{1.0f, 1.0f}},
-	// 	{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0, 0, 1},{0.0f, 1.0f}},
-
-	// 	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0, 0, 1},{0.0f, 0.0f}},
-	// 	{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0, 0, 1},{1.0f, 0.0f}},
-	// 	{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0, 0, 1},{1.0f, 1.0f}},
-	// 	{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0, 0, 1},{0.0f, 1.0f}}
-	// };
-
-	// indices = {
-	// 	0, 1, 2, 2, 3, 0,
-	// 	4, 5, 6, 6, 7, 4
-	// };
 }
 
 }	// namespace ve

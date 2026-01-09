@@ -88,45 +88,50 @@ void	Scop::run()
 	KeyboardInput	keyboardInput(vulkanWindow.getGLFWwindow());
 	MouseInput		mouseInput(vulkanWindow.getGLFWwindow());
 	size_t			frameCount = 0;
-	size_t			lastPressed = 0;
 
 	currentTime = std::chrono::high_resolution_clock::now();
-	rotateModel = false;
 	viewerObject.transform.translation = {0.0f, 0.0f, -10.0f};
+	FrameInfo	info
+	{
+		0,
+		elapsedTime,
+		camera,
+		commandBuffer,
+		nullptr,
+		objects, 
+		false,
+		false
+	};
+
 	while (vulkanWindow.shouldClose() == false)
 	{
 		glfwPollEvents();
 		newTime = std::chrono::high_resolution_clock::now();
 		elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 		currentTime = newTime;
-		keyboardInput.registerKeyPresses();
-		rotateModel = keyboardInput.shouldRotate(lastPressed, frameCount);
 		keyboardInput.move(viewerObject, elapsedTime);
 		mouseInput.move(viewerObject, elapsedTime);
 		camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 		aspectRatio = vulkanRenderer.getAspectRatio();
 		camera.setPerspectiveProjection(radians(50.0f), aspectRatio, 0.1f, 1000.0f);
-		
 		commandBuffer = vulkanRenderer.beginFrame();
+
 		if (commandBuffer != nullptr)
 		{
 			int frameIndex = vulkanRenderer.getCurrentFrameIndex();
 			GlobalUBO	ubo{};
-			FrameInfo	info{
-				frameIndex,
-				elapsedTime,
-				camera,
-				commandBuffer,
-				globalDescriptorSets[frameIndex],
-				objects
-			};
 
+			info.frameIndex = frameIndex;
+			info.commandBuffer = commandBuffer;
+			info.globalDescriptorSet = globalDescriptorSets[frameIndex];
+			info.useTexture = keyboardInput.shouldShowTextures(frameCount, info.useTexture);
+			info.rotateModel = keyboardInput.shouldRotate(frameCount, info.rotateModel);
 			ubo.projectionView = camera.getProjectionMatrix() * camera.getViewMatrix();
 			uboBuffers[frameIndex]->writeToBuffer(&ubo);
 			uboBuffers[frameIndex]->flush();
 
 			vulkanRenderer.beginSwapChainRenderPass(commandBuffer);
-			renderSystem.renderObjects(info, rotateModel);
+			renderSystem.renderObjects(info);
 			newTime = std::chrono::high_resolution_clock::now();
 			std::cout << "\rFrames per second: " << static_cast<int> (1.0f / elapsedTime) << ", Frame time: ";
 			std::cout << std::chrono::duration<float, std::chrono::milliseconds::period>(newTime - currentTime).count() << "ms " << std::flush;		

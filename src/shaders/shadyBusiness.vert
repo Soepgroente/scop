@@ -22,6 +22,7 @@ layout(push_constant) uniform PushConstants
 {
 	mat4	modelMatrix;
 	mat4	normalMatrix;
+	uint	useTexture;
 }	push;
 
 void main()

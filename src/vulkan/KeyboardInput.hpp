@@ -31,15 +31,15 @@ class KeyboardInput
 		int lookDown;
 		int rotate;
 		int	toggleTexture;
+		std::vector<size_t>	lastPressedFrames;
 	};
 
-	bool	shouldRotate(size_t& lastPressed, size_t frameCount);
+	bool	shouldRotate(size_t frameCount, bool isRotating);
+	bool	shouldShowTextures(size_t frameCount, bool isShowing);
 
 	void	move(VulkanObject& object, float deltaTime);
-	void	registerKeyPresses();
-	void	resetRegisteredKeys();
 
-	static KeyMappings	keys;
+	KeyMappings	keys;
 
 	float	movementSpeed{10.0f};
 	float	lookSpeed{1.0f};

@@ -12,8 +12,9 @@ namespace ve {
 
 struct SimplePushConstantData
 {
-	mat4	modelMatrix{1.0f};
-	mat4	normalMatrix{1.0f};
+	mat4		modelMatrix{1.0f};
+	mat4		normalMatrix{1.0f};
+	uint32_t	useTexture;
 };
 
 VulkanRenderSystem::VulkanRenderSystem(VulkanDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
@@ -69,7 +70,7 @@ void	VulkanRenderSystem::createPipeline(VkRenderPass renderPass)
 	);
 }
 
-void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, bool rotateModel)
+void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo)
 {
 	vulkanPipeline->bind(frameInfo.commandBuffer);
 
@@ -88,7 +89,7 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, bool rotateModel)
 		{
 			continue;
 		}
-		if (rotateModel == true)
+		if (frameInfo.rotateModel == true)
 		{
 			obj.transform.rotation.y = std::fmod(obj.transform.rotation.y + 0.015f, two_pi());
 		}
@@ -96,6 +97,7 @@ void	VulkanRenderSystem::renderObjects(FrameInfo& frameInfo, bool rotateModel)
 
 		push.modelMatrix = obj.transform.matrix4(obj.model->getBoundingCenter());
 		push.normalMatrix = obj.transform.normalMatrix();
+		push.useTexture = frameInfo.useTexture;
 
 		vkCmdPushConstants(
 			frameInfo.commandBuffer,

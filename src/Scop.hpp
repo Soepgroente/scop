@@ -46,7 +46,6 @@ class Scop
 	std::string					objModelPath;
 	VulkanObject::Map			objects;
 	std::vector<VulkanTexture>	textures;
-	bool						rotateModel;
 };
 
 std::vector<ObjInfo>	parseOBJFile(const std::string& objFilePath);
