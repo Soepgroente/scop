@@ -71,10 +71,10 @@ runtest:
 
 retest: fclean test
 
-debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
-debug: $(SHADERS_COMPILED) $(NAME)
 debug:
 	$(MAKE) -C $(VECTOR_DIR) debug
+debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
+debug: $(SHADERS_COMPILED) $(NAME)
 
 run: all
 	./$(NAME) ./models/teapot.obj

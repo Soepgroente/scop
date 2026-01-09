@@ -58,7 +58,7 @@ void	Scop::run()
 		.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		.build();
 	std::vector<VkDescriptorSet>	globalDescriptorSets(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
-	VulkanTexture texture{"textures/defaultTex.jpg", vulkanDevice};
+	VulkanTexture texture{"textures/derpy_cats.jpg", vulkanDevice};
 
 	for (size_t i = 0; i < globalDescriptorSets.size(); i++)
 	{

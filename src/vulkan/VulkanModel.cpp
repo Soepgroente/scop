@@ -247,13 +247,12 @@ void	VulkanModel::Builder::loadModel(const std::string &filepath)
 							{
 								vertex.textureUv = vec2{(vertex.pos.x + 1.0f) * 0.5f, (vertex.pos.y + 1.0f) * 0.5f};
 							}
-							// std::cout << "Generated UV: " << vertex.textureUv.x << ", " << vertex.textureUv.y << std::endl;
 						}
 						if (norm.size() > ti)
 						{
 							vertex.normal = obj.normals[norm[ti]];
 						}
-						vertex.color = generateRandomGreyscale();
+						vertex.color = generateRandomColor();
 						if (uniqueVertices.count(vertex) == 0)
 						{
 							uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
