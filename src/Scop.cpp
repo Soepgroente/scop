@@ -59,6 +59,7 @@ void	Scop::run()
 		.build();
 	std::vector<VkDescriptorSet>	globalDescriptorSets(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 	VulkanTexture texture{"textures/derpy_cats.jpg", vulkanDevice};
+	// VulkanTexture texture{"textures/viking_room.png", vulkanDevice};
 
 	for (size_t i = 0; i < globalDescriptorSets.size(); i++)
 	{

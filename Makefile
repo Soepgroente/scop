@@ -10,8 +10,8 @@ INCLUDES	:=	-I./src \
 				-I./src/vectors \
 				-I./src/vulkan \
 
-VECTOR_DIR	:=	src/vectors
-LIBS		:=	$(VECTOR_DIR)/customVectors.a
+VECTOR_DIR		:=	src/vectors
+LIBS			:=	$(VECTOR_DIR)/customVectors.a
 
 SRCS	:=	Scop.cpp \
 			include/stb_image.cpp \
@@ -61,7 +61,7 @@ endif
 
 CPPFLAGS = $(BASE_CPPFLAGS) $(RELEASE_FLAGS)
 
-all: $(SHADERS_COMPILED) $(NAME)
+all: vector-lib $(SHADERS_COMPILED) $(NAME)
 
 test:
 	$(MAKE) -C $(VECTOR_DIR) test
@@ -71,10 +71,14 @@ runtest:
 
 retest: fclean test
 
-debug:
+vector-lib: 
+	$(MAKE) -C $(VECTOR_DIR)
+
+vector-lib-debug: 
 	$(MAKE) -C $(VECTOR_DIR) debug
-debug: CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
-debug: $(SHADERS_COMPILED) $(NAME)
+
+debug:	CPPFLAGS = $(BASE_CPPFLAGS) $(DEBUG_FLAGS)
+debug: vector-lib-debug $(SHADERS_COMPILED) $(NAME)
 
 run: all
 	./$(NAME) ./models/teapot.obj
@@ -90,9 +94,9 @@ $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 $(LIBS):
-	$(MAKE) -C $(VECTOR_DIR)
+	$(MAKE) -C $(VECTOR_DIR) $(LIBBUILD)
 
-$(NAME): $(LIBS) $(OBJDIR) $(OBJS) $(MAINOBJ)
+$(NAME): $(OBJDIR) $(OBJS) $(MAINOBJ)
 	$(CC) $(CPPFLAGS) $(INCLUDES) -o $(NAME) $(MAINOBJ) $(OBJS) $(LIBS) $(LDFLAGS) $(LFLAGS)
 
 %.spv : %
